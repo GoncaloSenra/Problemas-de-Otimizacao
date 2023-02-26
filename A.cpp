@@ -4,18 +4,34 @@
 
 using namespace std;
 
-void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
-    cout << "teste" << endl;
-    int qr [n][n];
+class node {
+    public:
+    int dim;
+    vector<vector<int>> qr;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            qr[i][j] = 0; 
-        }
+    vector<node*> children;
+
+    node(int dim) : dim(dim), qr(dim, vector<int>(dim)) {}
+
+    void newChild(node * child) {
+        children.push_back(child);
     }
 
-    cout << "teste2" << endl;
+};
 
+void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+    cout << "teste" << endl;
+    
+    node * root = new node(n);
+    node * child1 = new node(n);
+
+    root->newChild(child1);
+
+    child1->qr[0][0] = 1;
+
+    
+    
+    cout << "teste2" << endl;
 
 }
 
