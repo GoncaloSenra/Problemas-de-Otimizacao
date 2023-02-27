@@ -19,20 +19,58 @@ class node {
 
 };
 
+void fill_line(node * root, vector<int> vec, int n, int blacks, int i, int line);
+
+
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
     cout << "teste" << endl;
     
     node * root = new node(n);
-    node * child1 = new node(n);
+    //node * child1 = new node(n);
 
-    root->newChild(child1);
+    //root->newChild(child1);
 
-    child1->qr[0][0] = 1;
+    //child1->qr[0][0] = 1;
 
     
-    
+    for (int i = 0; i < n; i++) {
+        vector<int> line(n);
+
+        fill_line(root, line, n, lb[i], 0, i);
+
+    }
     cout << "teste2" << endl;
 
+}
+
+void rec(node * root){
+
+    for (int i = 0; i < root->children.size(); i++) {
+        vector<int> line(n);
+
+        fill_line(root->children[i], line, n, lb[i], 0, i);
+
+    }
+
+}
+
+
+void fill_line(node * root, vector<int> vec, int n, int blacks, int i, int line) {
+
+    if (blacks == 0) {
+        node * child = new node(n);
+        child->qr = root->qr;
+        child->qr[line] = vec;
+        root->newChild(child);
+        
+        return;
+    }
+
+    for (int j = i; j < n; j++) {
+        vec[j] = 1;
+        fill_line(root, vec, n, blacks - 1, i + 1, line);
+        vec[j] = 0;
+    }
 }
 
 
