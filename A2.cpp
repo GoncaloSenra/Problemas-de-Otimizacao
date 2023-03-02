@@ -32,11 +32,11 @@ bool isNotValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> 
             }
         }
         if (transitions != lt[line]){
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 
@@ -53,22 +53,48 @@ bool rec(vector<vector<int>> qr, int dim, int i, int j, vector<int> lb, vector<i
     if (i < dim - 1) {
         qr[j][i] = 1;
         if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, i + 1, j, lb, cb, lt, ct, qb, db)) {
-            return true;
+            int aux;
+        } else {
+            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
+                return false;
+            }
         }
         qr[j][i] = 0;
-        return rec(qr, dim, i + 1, j, lb, cb,  lt, ct, qb, db);
+        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, i + 1, j, lb, cb, lt, ct, qb, db)) {
+            int aux;
+        } else {
+            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
+                return false;
+            }
+        }
+       
 
     } else if (i == dim - 1) {
+        
         qr[j][i] = 1;
-        if (qr[0][0] == 1 && qr[0][1] == 1 && qr[0][2] == 1 && qr[1][0] == 1 && qr[1][1] == 1 && qr[1][2] == 1 && qr[2][0] == 1 && qr[2][1] == 1 && qr[2][2] == 1) {
+        if (qr[0][0] == 1 && qr[0][1] == 1 && qr[1][0] == 1 && qr[1][1] == 1) {
+            int aux = 0;
+            cout << aux;
+        }
+        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, 0, j + 1, lb, cb, lt, ct, qb, db)) {
             int aux;
+        } else {
+            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
+                return false;
+            }
         }
-        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, 0, j + 1, lb, cb, lt, ct, qb, db)) {
-            return false;
-        }
+        
         qr[j][i] = 0;
+        if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 0) {
+            int aux = 0;
+            cout << aux;
+        }
         if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, 0, j + 1, lb, cb, lt, ct, qb, db)) {
-            return false;
+            int aux;
+        } else {
+            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
+                return false;
+            }
         }
 
     }
