@@ -5,21 +5,9 @@
 
 using namespace std;
 
-/*
-class node {
-    public:
-    int dim;
-    vector<vector<int>> qr;
-
-    node * right;
-    node * left;
-
-    node(int dim) : dim(dim), qr(dim, vector<int>(dim)) {}
-
-};
-*/
-
 vector<vector<int>> test;
+
+int countqrs = 0;
 
 bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
@@ -39,7 +27,6 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb,
     return true;
 }
 
-
 bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
     if (i == dim) {
@@ -53,6 +40,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
 
     if (j == dim) {
         test = qr;
+        countqrs++;
         return false;
     }
 
@@ -70,6 +58,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
             rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
         }else if (k == dim - 1 && j == dim - 1 && isValid(qr, dim, j, i + 1, lb, cb, lt, ct, qb, db)) {
             test = qr;
+            countqrs++;
             return false;
         }
         
@@ -79,14 +68,21 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
 }
 
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
-    cout << "teste" << endl;
     
+    countqrs = 0;
     vector<vector<int>> qr(n, vector<int>(n));
     vector<vector<int>> visited(n, vector<int>(n));
 
     rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
     
-    cout << "teste2" << endl;
+    if (countqrs == 0) {
+        cout << "DEFECT: No QR Code generated!" << endl;
+    } else if (countqrs == 1) {
+        cout << "VALID: 1 QR Code generated!" << endl;
+        //TODO: PRINT QR CODE
+    } else if (countqrs > 1) {
+        cout << "INVALID: " << countqrs << " QR Codes generated!" << endl;
+    }
 
 
 }
