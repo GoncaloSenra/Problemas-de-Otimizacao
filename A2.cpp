@@ -19,11 +19,11 @@ class node {
 };
 */
 
-vector<vector<vector<int>>> test;
+vector<vector<int>> test;
 
-bool isNotValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
-    if (col == dim - 1) {
+    if (col == dim) {
         int transitions = 0;
         for (int i = 0; i < dim - 1; i++) {
             int j = i + 1;
@@ -40,75 +40,51 @@ bool isNotValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> 
 }
 
 
-bool rec(vector<vector<int>> qr, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+
+    if (i == dim) {
+        i = 0;
+        j++;
+    }
+
+    if (!isValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)){
+        return false;
+    }
 
     if (j == dim) {
-        test.push_back(qr);
-        return true;
+        test = qr;
+        return false;
     }
 
-    
-    //TODO: verificar se é possivel
-
-    if (i < dim - 1) {
-        qr[j][i] = 1;
-        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, i + 1, j, lb, cb, lt, ct, qb, db)) {
-            int aux;
-        } else {
-            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
-                return false;
-            }
+    for (int k = i; k < dim; k++) {
+        if (visited[j][k] == 0) {
+            visited[j][k] = 1;
+            qr[j][k] = 1;
+            rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
+            qr[j][k] = 0;
+            visited[j][k] = 0;   
         }
-        qr[j][i] = 0;
-        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, i + 1, j, lb, cb, lt, ct, qb, db)) {
-            int aux;
-        } else {
-            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
-                return false;
-            }
-        }
-       
-
-    } else if (i == dim - 1) {
-        
-        qr[j][i] = 1;
-        if (qr[0][0] == 1 && qr[0][1] == 1 && qr[1][0] == 1 && qr[1][1] == 1) {
-            int aux = 0;
-            cout << aux;
-        }
-        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, 0, j + 1, lb, cb, lt, ct, qb, db)) {
-            int aux;
-        } else {
-            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
-                return false;
-            }
+        if (k == dim - 1 && j < dim - 1 && isValid(qr, dim, j, i + 1, lb, cb, lt, ct, qb, db)) {
+            i = 0;
+            j++;
+            rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
+        }else if (k == dim - 1 && j == dim - 1 && isValid(qr, dim, j, i + 1, lb, cb, lt, ct, qb, db)) {
+            test = qr;
+            return false;
         }
         
-        qr[j][i] = 0;
-        if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 0) {
-            int aux = 0;
-            cout << aux;
-        }
-        if (isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db) && rec(qr, dim, 0, j + 1, lb, cb, lt, ct, qb, db)) {
-            int aux;
-        } else {
-            if (!isNotValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)) {
-                return false;
-            }
-        }
-
     }
-    
-    return true;
+
+    return false;
 }
 
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
     cout << "teste" << endl;
     
     vector<vector<int>> qr(n, vector<int>(n));
+    vector<vector<int>> visited(n, vector<int>(n));
 
-    rec(qr, n, 0, 0, lb, cb, lt, ct, qb, db);
-    
+    rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
     
     cout << "teste2" << endl;
 
