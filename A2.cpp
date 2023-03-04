@@ -64,7 +64,7 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 }
 
 //TODO: Acabar as restrições
-bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
     //NOTE: COLUMN TRANSITIONS
     /*
@@ -83,6 +83,44 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb,
     */
     //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
         //cout << "debug";
+
+    if (aux == 1) {
+        int lblacks = 0;
+        int cblacks = 0;
+        int ltrans = 0;
+        int ctrans = 0;
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                int k = j + 1;
+                int l = j + 1;
+                if (qr[i][j] == 1) {
+                    lblacks++;
+                }
+                if (qr[j][i] == 1) {
+                    cblacks++;
+                }
+                if (j != dim - 1 && qr[i][j] != qr[i][k]) {
+                    ltrans++;
+                }
+                if (i != dim - 1 && qr[j][i] != qr[l][i]) {
+                    ctrans++;
+                }
+            }
+            if (lblacks != lb[i]) {
+                return false;
+            }
+            if (cblacks != cb[i]) {
+                return false;
+            }
+            if (ltrans != lt[i]) {
+                return false;
+            }
+            if (ctrans != ct[i]) {
+                return false;
+            }
+            
+        }
+    }
 
     //NOTE: COLUMN BLACKS
     if (line == dim - 1 && col > 0) {
@@ -159,7 +197,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
         j++;
     }
 
-    if (!isValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)){
+    if (!isValid(0, qr, dim, j, i, lb, cb, lt, ct, qb, db)){
         return false;
     }
 
@@ -178,11 +216,11 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
             qr[j][k] = 0;
             visited[j][k] = 0;   
         }
-        if (k == dim - 1 && j < dim - 1 && isValid(qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
+        if (k == dim - 1 && j < dim - 1 && isValid(0, qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
             i = 0;
             j++;
             rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
-        }else if (k == dim - 1 && j == dim - 1 && isValid(qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
+        }else if (k == dim - 1 && j == dim - 1 && isValid(1, qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
             test = qr;
             countqrs++;
             printQrCode(test, dim);
