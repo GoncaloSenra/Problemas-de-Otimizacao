@@ -83,7 +83,7 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
     */
     //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
         //cout << "debug";
-
+    
     if (aux == 1) {
         int lblacks = 0;
         int cblacks = 0;
@@ -102,7 +102,7 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
                 if (j != dim - 1 && qr[i][j] != qr[i][k]) {
                     ltrans++;
                 }
-                if (i != dim - 1 && qr[j][i] != qr[l][i]) {
+                if (j != dim - 1 && qr[j][i] != qr[l][i]) {
                     ctrans++;
                 }
             }
@@ -118,10 +118,14 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             if (ctrans != ct[i]) {
                 return false;
             }
+            lblacks = 0;
+            cblacks = 0;
+            ltrans = 0;
+            ctrans = 0;
             
         }
     }
-
+    
     //NOTE: COLUMN BLACKS
     if (line == dim - 1 && col > 0) {
         int blacks = 0;
