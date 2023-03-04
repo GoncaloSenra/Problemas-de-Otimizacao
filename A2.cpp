@@ -5,6 +5,30 @@
 
 using namespace std;
 
+/*
+2
+0 1
+0 1  
+0 1 
+0 1 
+0 1 0 1 
+2 0
+2
+2 2
+2 2  
+0 0 
+0 0 
+0 1 0 1 
+2 0
+2
+2 0
+1 1  
+0 0 
+1 1 
+0 1 0 1 
+2 0
+*/
+
 vector<vector<int>> test;
 
 int countqrs = 0;
@@ -42,23 +66,93 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 //TODO: Acabar as restrições
 bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
-    if (col == dim) {
-        int transitions = 0;
+    //NOTE: COLUMN TRANSITIONS
+    /*
+    if (line == dim-1) {
+        int transitions_c = 0;
         for (int i = 0; i < dim - 1; i++) {
             int j = i + 1;
             if (qr[line][i] != qr[line][j]) {
-                transitions++;
+                transitions_c++;
             }
         }
-        if (transitions != lt[line]){
+        if (transitions_c != lt[line]){
             return false;
         }
     }
+    */
+    //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
+        //cout << "debug";
+
+    //NOTE: COLUMN BLACKS
+    if (line == dim - 1 && col > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            if (qr[i][col - 1] == 1) {
+                blacks++;
+            }
+        }
+        if (blacks != cb[col - 1]) {
+            return false;
+        }
+    } else if (col > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            if (qr[i][col] == 1) {
+                blacks++;
+            }
+            if (blacks > cb[col]) {
+                return false;
+            }
+        }
+    }
+
+    //NOTE: LINE TRANSITIONS
+    if (col == 0 && line > 0) {
+        int transitions = 0;
+        for (int i = 0; i < dim - 1; i++) {
+            int j = i + 1;
+            if (qr[line-1][i] != qr[line-1][j]) {
+                transitions++;
+            }
+        }
+        if (transitions != lt[line - 1]){
+            return false;
+        }
+    }
+
+    //NOTE: LINE BLACKS
+    if (col == 0 && line > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            if (qr[line - 1][i] == 1) {
+                blacks++;
+            }
+        }
+        if (blacks != lb[line - 1]) {
+            return false;
+        }
+    } else if (col > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            if (qr[line][i] == 1) {
+                blacks++;
+            }
+            if (blacks > lb[line]) {
+                return false;
+            }
+        }
+    }
+
+    
 
     return true;
 }
 
 bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+
+    //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 0)
+        //cout << "debug";
 
     if (i == dim) {
         i = 0;
@@ -72,7 +166,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
     if (j == dim) {
         test = qr;
         countqrs++;
-        //printQrCode(test, dim);
+        printQrCode(test, dim);
         return false;
     }
 
@@ -84,14 +178,14 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
             qr[j][k] = 0;
             visited[j][k] = 0;   
         }
-        if (k == dim - 1 && j < dim - 1 && isValid(qr, dim, j, i + 1, lb, cb, lt, ct, qb, db)) {
+        if (k == dim - 1 && j < dim - 1 && isValid(qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
             i = 0;
             j++;
             rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
-        }else if (k == dim - 1 && j == dim - 1 && isValid(qr, dim, j, i + 1, lb, cb, lt, ct, qb, db)) {
+        }else if (k == dim - 1 && j == dim - 1 && isValid(qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
             test = qr;
             countqrs++;
-            //printQrCode(test, dim);
+            printQrCode(test, dim);
             return false;
         }
         
