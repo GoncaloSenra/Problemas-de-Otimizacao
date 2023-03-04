@@ -66,21 +66,7 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 //TODO: Acabar as restrições
 bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
-    //NOTE: COLUMN TRANSITIONS
-    /*
-    if (line == dim-1) {
-        int transitions_c = 0;
-        for (int i = 0; i < dim - 1; i++) {
-            int j = i + 1;
-            if (qr[line][i] != qr[line][j]) {
-                transitions_c++;
-            }
-        }
-        if (transitions_c != lt[line]){
-            return false;
-        }
-    }
-    */
+   
     //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
         //cout << "debug";
     
@@ -125,6 +111,22 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             
         }
     }
+
+    //NOTE: COL TRANSITIONS
+    if (line > 0) {
+        int transitions = 0;
+        for (int i = 0; i < dim - 1; i++) {
+            int j = i + 1;
+            if (qr[i][col] != qr[j][col]) {
+                transitions++;
+            }
+            if (transitions != ct[col]){
+                return false;
+            }
+        }
+        
+    }
+    
     
     //NOTE: COLUMN BLACKS
     if (line == dim - 1 && col > 0) {
@@ -185,9 +187,6 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             }
         }
     }
-
-    
-
     return true;
 }
 
