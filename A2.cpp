@@ -275,9 +275,46 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             return false;
         }
     } 
+    
+    //NOTE: QUADRANTS BLACKS
+    if (col > 0) {
+        int tam, tam2;
+        int count_1 = 0, count_2 = 0, count_3 = 0, count_4 = 0;
+        if (dim % 2 == 0) 
+            tam = (dim / 2); tam2 = (dim / 2);
+        if (dim % 2 != 0) 
+            tam = (dim / 2); tam2 = (dim / 2) + 1;
+        int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
+        for (int i = 0; i < line; i++) {
+            for (int j = 0; j < col; j++) {
+                if (i <= (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 1) {
+                    count_2++;
+                } else if (i <= (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 0) {
+                    aux2--;
+                } else if (i <= (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 1) {
+                    count_1++;
+                } else if (i <= (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 0) {
+                    aux1--;
+                } else if (i > (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 1) {
+                    count_3++;
+                } else if (i > (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 0) {
+                    aux3--;
+                } else if (i > (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 1) {
+                    count_4++;
+                } else if (i > (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 0) {
+                    aux4--;
+                }
+            }
+        }
+        if (aux1 < qb[0] || aux2 < qb[1] || aux3 < qb[2] || aux4 < qb[3]) {
+            return false;
+        }
 
-    //TODO: QUADRANTS BLACKS
+        if (count_1 > qb[0] || count_2 > qb[1] || count_3 > qb[2] || count_4 > qb[3]) {
+            return false;
+        }
 
+    }
 
     return true;
 }
