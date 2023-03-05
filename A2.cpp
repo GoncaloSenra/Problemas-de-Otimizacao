@@ -130,7 +130,7 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
         return true;
     }
 
-    //NOTE: COL TRANSITIONS
+    //NOTE: COL TRANSITIONS (só conta transiçoes no final de cada coluna)
     if (line == dim - 1 && col > 0) {
         int transitions = 0;
         for (int i = 0; i < dim - 1; i++) {
