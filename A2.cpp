@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <time.h>
 
 using namespace std;
 
@@ -83,7 +84,7 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
    
-    //if (qr[0][0] == 0 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
+    //if (qr[0][0] == 1 && qr[0][1] == 0 && qr[0][2] == 0 && qr[1][0] == 0 && qr[1][1] == 0 && qr[1][2] == 0 && qr[2][0] == 0 && qr[2][1] == 0 && qr[2][2] == 0)
         //cout << "debug";
     
     //NOTE: FINAL VALIDATION
@@ -130,7 +131,7 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
         return true;
     }
 
-    //NOTE: COL TRANSITIONS (só conta transiçoes no final de cada coluna)
+    //NOTE: COL TRANSITIONS
     if (line == dim - 1 && col > 0) {
         int transitions = 0;
         for (int i = 0; i < dim - 1; i++) {
@@ -143,6 +144,17 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             return false;
         }
         
+    } else if (line > 1) {
+        int transitions = 0;
+        for (int i = 0; i < line-1; i++) {
+            int j = i + 1;
+            if (qr[i][col] != qr[j][col]) {
+                transitions++;
+            }
+            if (transitions > ct[col]) {
+                return false;
+            }
+        }
     }
     
  
@@ -160,10 +172,10 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
     } else if (col > 0) {
         int blacks = 0;
         for (int i = 0; i < dim; i++) {
-            if (qr[i][col] == 1) {
+            if (qr[i][col - 1] == 1) {
                 blacks++;
             }
-            if (blacks > cb[col]) {
+            if (blacks > cb[col - 1]) {
                 return false;
             }
         }
@@ -180,6 +192,17 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
         }
         if (transitions != lt[line - 1]){
             return false;
+        }
+    } else if (col > 1) {
+        int transitions = 0;
+        for (int i = 0; i < col-1; i++) {
+            int j = i + 1;
+            if (qr[line][i] != qr[line][j]) {
+                transitions++;
+            }
+            if (transitions > lt[line]) {
+                return false;
+            }
         }
     }
 
@@ -205,12 +228,47 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             }
         }
     }
+
+    //NOTE: DIAGONAL LEFT - RIGHT
+    if (line > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            if (qr[i][i] == 1) {
+                blacks++;
+            }
+        }
+        if(blacks > db[0]){
+            return false;
+        }else if(blacks != db[0] && line == dim){
+            return false;
+        }
+    } 
+    
+    //NOTE: DIAGONAL RIGHT - LEFT
+    if (line > 0) {
+        int blacks = 0;
+        for (int i = 0; i < dim; i++) {
+            int indice = dim-i-1;
+            if(col <= indice ){
+                if (qr[i][indice] == 1) {
+                blacks++;
+                }
+            }
+        }
+        if(blacks > db[1]){
+            return false;
+        }else if(blacks != db[1] && line == dim){
+            return false;
+        }
+    } 
+
+
     return true;
 }
 
 bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
 
-    //if (qr[0][0] == 1 && qr[0][1] == 0 && qr[1][0] == 0 && qr[1][1] == 1)
+    //if (qr[0][0] == 0 && qr[0][1] == 1 && qr[1][0] == 1 && qr[1][1] == 0)
         //cout << "debug";
 
     if (i == dim) {
@@ -233,6 +291,8 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
         if (visited[j][k] == 0) {
             visited[j][k] = 1;
             qr[j][k] = 1;
+            //if (qr[0][0] == 0 && qr[0][1] == 1 && qr[1][0] == 0 && qr[1][1] == 0)
+                //cout << "debug";
             rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
             qr[j][k] = 0;
             visited[j][k] = 0;   
@@ -276,6 +336,8 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
 
 
 int main() {
+
+    clock_t tStart = clock();
 
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -321,6 +383,8 @@ int main() {
         qb.clear();
         db.clear();
     }
+
+    printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     return 0;
 }
