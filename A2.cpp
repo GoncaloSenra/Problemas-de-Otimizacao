@@ -93,6 +93,7 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
         int cblacks = 0;
         int ltrans = 0;
         int ctrans = 0;
+        int quad_1 = 0, quad_2 = 0, quad_3 = 0, quad_4 = 0;
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
                 int k = j + 1;
@@ -108,6 +109,16 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
                 }
                 if (j != dim - 1 && qr[j][i] != qr[l][i]) {
                     ctrans++;
+                }
+                
+                if (i <= (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 1) {
+                    quad_2++;
+                } else if (i <= (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 1) {
+                    quad_1++;
+                } else if (i > (dim / 2) - 1 && j <= (dim / 2) - 1 && qr[i][j] == 1) {
+                    quad_3++;
+                } else if (i > (dim / 2) - 1 && j > (dim / 2) - 1 && qr[i][j] == 1) {
+                    quad_4++;
                 }
             }
             if (lblacks != lb[i]) {
@@ -127,6 +138,9 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
             ltrans = 0;
             ctrans = 0;
             
+        }
+        if (quad_1 != qb[0] || quad_2 != qb[1] || quad_3 != qb[2] || quad_4 != qb[3]) {
+            return false;
         }
         return true;
     }
@@ -262,6 +276,8 @@ bool isValid(int aux, vector<vector<int>> qr, int dim, int line, int col, vector
         }
     } 
 
+    //TODO: QUADRANTS BLACKS
+
 
     return true;
 }
@@ -283,7 +299,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
     if (j == dim) {
         test = qr;
         countqrs++;
-        //printQrCode(test, dim);
+        printQrCode(test, dim);
         return false;
     }
 
@@ -301,10 +317,10 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
             i = 0;
             j++;
             rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
-        }else if (k == dim - 1 && j == dim - 1 && isValid(1, qr, dim, j, k + 1, lb, cb, lt, ct, qb, db)) {
+        }else if (k == dim - 1 && j == dim - 1 && isValid(1, qr, dim, j, k + 1, lb, cb, lt, ct, qb, db) && test != qr) {
             test = qr;
             countqrs++;
-            //printQrCode(test, dim);
+            printQrCode(test, dim);
             return false;
         }
         
