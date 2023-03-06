@@ -304,14 +304,14 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
             idxLines[i] = 1;
             countLines0++;
             for (int j = 0; j < n; j++) {
-                (*visited)[i][j] = 1;
+                (*visited)[i][j] = -1;
             }
         }
         if (cb[i] == 0) {
             idxCols[i] = 1;
             countCols0++;
             for (int j = 0; j < n; j++) {
-                (*visited)[j][i] = 1;
+                (*visited)[j][i] = -1;
             }
         }
         if (lb[i] == n) {
@@ -345,7 +345,7 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
         if (n - countLines1 == cb[i]) {
             for (int j = 0; j < n; j++) {
                 if ((*visited)[j][i] == 0) {
-                    (*visited)[j][i] = 1;
+                    (*visited)[j][i] = -1;
                     (*qr)[j][i] = 0;
                 }
             }
@@ -353,7 +353,7 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
         if (n - countCols1 == lb[i]) {
             for (int j = 0; j < n; j++) {
                 if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
+                    (*visited)[i][j] = -1;
                     (*qr)[i][j] = 0;
                 }
             }
