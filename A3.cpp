@@ -293,7 +293,13 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     int countLines1 = 0; 
     int countCols1 = 0; 
     int countLines0 = 0; 
-    int countCols0 = 0; 
+    int countCols0 = 0;
+
+    int countDiagonal1 = 0; 
+    int countDiagonal0 = 0;
+    int countDiagonalInv1 = 0; 
+    int countDiagonalInv0 = 0;
+
 
     vector<int> idxLines(n);
     vector<int> idxCols(n);
@@ -415,6 +421,93 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
         }
     }
     
+    //NOTE: DIAGONALS
+    if(db[0] == 0){
+        for (int i = 0; i < n; i++) {
+            (*visited)[i][i] = -1;
+            (*qr)[i][i] = 0;       
+        }
+    }else if(db[0] == n){
+        for (int i = 0; i < n; i++){
+            (*visited)[i][i] = 1;
+            (*qr)[i][i] = 1;
+        }
+    }
+
+    if(db[1] == 0){
+        for (int i = 0; i < n; i++) {
+            int indice = n-i-1;
+            (*visited)[i][indice] = -1;
+            (*qr)[i][indice] = 0;       
+        }
+    }else if(db[1] == n){
+        for (int i = 0; i < n; i++){
+            int indice = n-i-1;
+            (*visited)[i][indice] = 1;
+            (*qr)[i][indice] = 1;
+        }
+    }
+
+
+    for (int i = 0; i < n; i++){
+        if((*visited)[i][i] == 1){
+            countDiagonal1++;
+        }
+    }
+    for (int i = 0; i < n; i++){
+        if((*visited)[i][i] == -1){
+            countDiagonal0++;
+        }
+    }
+    if (n - countDiagonal0 == db[0]) {
+        for (int i = 0; i < n; i++) {
+            if ((*visited)[i][i] == 0) {
+                (*visited)[i][i] = 1;
+                (*qr)[i][i] = 1;
+            }
+        }
+    }else if(countDiagonal1 == db[0]){
+        for (int i = 0; i < n; i++) {
+            if ((*visited)[i][i] == 0) {
+                (*visited)[i][i] = -1;
+                (*qr)[i][i] = 0;
+            }
+        }
+    }
+
+
+    for (int i = 0; i < n; i++){
+        int indice = n - i - 1;
+        if((*visited)[i][indice] == 1){
+            countDiagonalInv1++;
+        }
+    }
+    for (int i = 0; i < n; i++){
+        int indice = n - i - 1;
+        if((*visited)[i][indice] == -1){
+            countDiagonalInv0++;
+        }
+    }
+    if (n - countDiagonalInv0 == db[0]) {
+        for (int i = 0; i < n; i++) {
+            int indice = n - i - 1;
+            if ((*visited)[i][indice] == 0) {
+                (*visited)[i][indice] = 1;
+                (*qr)[i][indice] = 1;
+            }
+        }
+    }else if(countDiagonalInv1 == db[0]){
+        for (int i = 0; i < n; i++) {
+            int indice = n - i - 1;
+            if ((*visited)[i][indice] == 0) {
+                (*visited)[i][indice] = -1;
+                (*qr)[i][indice] = 0;
+            }
+        }
+    }
+    
+
+
     //NOTE:
     for (int i = 0; i < n; i++) {
         if (n - countLines0 == cb[i]) {
@@ -501,7 +594,7 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
 
 int main() {
     
-    //clock_t tStart = clock();
+    clock_t tStart = clock();
 
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -548,7 +641,7 @@ int main() {
         db.clear();
     }
 
-    //printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     return 0;
 }
