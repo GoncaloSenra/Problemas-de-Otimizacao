@@ -290,32 +290,87 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
 
 void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
     
+    int countLines1 = 0; 
+    int countCols1 = 0; 
+    int countLines0 = 0; 
+    int countCols0 = 0; 
+
+    vector<int> idxLines(n);
+    vector<int> idxCols(n);
+
+    //NOTE: FILL LINES AND COLS
     for (int i = 0; i < n; i++) {
         if (lb[i] == 0) {
+            idxLines[i] = 1;
+            countLines0++;
             for (int j = 0; j < n; j++) {
                 (*visited)[i][j] = 1;
             }
         }
         if (cb[i] == 0) {
+            idxCols[i] = 1;
+            countCols0++;
             for (int j = 0; j < n; j++) {
                 (*visited)[j][i] = 1;
             }
         }
         if (lb[i] == n) {
+            idxLines[i] = 2;
+            countLines1++;
             for (int j = 0; j < n; j++) {
                 (*qr)[i][j] = 1;
                 (*visited)[i][j] = 1;
             }
         }
         if (cb[i] == n) {
+            idxCols[i] = 2;
+            countCols1++;
             for (int j = 0; j < n; j++) {
                 (*qr)[j][i] = 1;
                 (*visited)[j][i] = 1;
             }
         }
     }
+    
+    //NOTE:
+    for (int i = 0; i < n; i++) {
+        if (n - countLines0 == cb[i]) {
+            for (int j = 0; j < n; j++) {
+                if ((*visited)[j][i] == 0) {
+                    (*visited)[j][i] = 1;
+                    (*qr)[j][i] = 1;
+                }
+            }
+        }
+        if (n - countLines1 == cb[i]) {
+            for (int j = 0; j < n; j++) {
+                if ((*visited)[j][i] == 0) {
+                    (*visited)[j][i] = 1;
+                    (*qr)[j][i] = 0;
+                }
+            }
+        }
+        if (n - countCols1 == lb[i]) {
+            for (int j = 0; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 0;
+                }
+            }
+        }
+        if (n - countCols0 == lb[i]) {
+            for (int j = 0; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 1;
+                }
+            }
+        }
 
+    }
 
+    idxLines.clear();
+    idxCols.clear();
 }
 
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
@@ -342,7 +397,7 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
 
 int main() {
 
-    clock_t tStart = clock();
+    //clock_t tStart = clock();
 
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -389,7 +444,7 @@ int main() {
         db.clear();
     }
 
-    printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    //printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     return 0;
 }
