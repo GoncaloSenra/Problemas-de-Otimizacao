@@ -331,6 +331,89 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
             }
         }
     }
+
+    int tam, tam2;
+
+    if (n % 2 == 0) 
+        tam = (n / 2); tam2 = (n / 2);
+    if (n % 2 != 0) 
+        tam = (n / 2); tam2 = (n / 2) + 1;
+
+    int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
+    
+    //TODO: FILL QUANDRANTS
+    if (qb[0] == aux1) {
+        for (int i = 0; i < tam; i++) {
+            for (int j = tam ; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 1;
+                }
+            }
+        }
+    } else if (qb[0] == 0) {
+        for (int i = 0; i < tam; i++) {
+            for (int j = tam ; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = -1;
+                }
+            }
+        }
+    }
+    if (qb[1] == aux2) {
+        for (int i = 0; i < tam; i++) {
+            for (int j = 0 ; j < tam; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 1;
+                }
+            }
+        }
+    } else if (qb[1] == 0) {
+        for (int i = 0; i < tam; i++) {
+            for (int j = 0 ; j < tam; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = -1;
+                }
+            }
+        }
+    }
+    if (qb[2] == aux3) {
+        for (int i = tam; i < n; i++) {
+            for (int j = 0 ; j < tam; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 1;
+                }
+            }
+        }
+    } else if (qb[2] == 0) {
+        for (int i = tam; i < n; i++) {
+            for (int j = 0 ; j < tam; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = -1;
+                }
+            }
+        }
+    }
+    if (qb[3] == aux4) {
+        for (int i = tam; i < n; i++) {
+            for (int j = tam ; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = 1;
+                    (*qr)[i][j] = 1;
+                }
+            }
+        }
+    } else if (qb[3] == 0) {
+        for (int i = tam; i < n; i++) {
+            for (int j = tam ; j < n; j++) {
+                if ((*visited)[i][j] == 0) {
+                    (*visited)[i][j] = -1;
+                }
+            }
+        }
+    }
     
     //NOTE:
     for (int i = 0; i < n; i++) {
@@ -375,18 +458,39 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
 
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
     countqrs = 0;
+    int aux = 0;
     vector<vector<int>> qr(n, vector<int>(n));
     vector<vector<int>> visited(n, vector<int>(n));
 
     pre_proc(&qr, &visited, n, lb, cb, lt, ct, qb, db);
-   
-    rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
+
+    //TODO: Se a matriz visited estiver totalmente preenchida a 1 na entrar no rec!
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (visited[i][j] == 0) {
+                aux = 1;
+                break;
+            }
+        }
+        if (aux == 1)
+            break;
+    }
+
+    //TODO: Se o pre_proc retornar impossivel nao entrar no rec 
     
-    if (countqrs == 0) {
-        cout << "DEFECT: No QR Code generated!" << endl;
-    } else if (countqrs == 1) {
+
+    if (aux == 1)
+        rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
+    else
+        saved = qr;
+
+    
+    if (countqrs == 1 || aux == 0) {
         cout << "VALID: 1 QR Code generated!" << endl;
         printQrCode(saved, n);
+    } else if (countqrs == 0 ) {
+        cout << "DEFECT: No QR Code generated!" << endl;
     } else if (countqrs > 1) {
         cout << "INVALID: " << countqrs << " QR Codes generated!" << endl;
     }
@@ -396,7 +500,7 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
 
 
 int main() {
-
+    
     //clock_t tStart = clock();
 
     ios_base::sync_with_stdio(false);
