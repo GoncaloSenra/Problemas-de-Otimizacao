@@ -11,21 +11,8 @@
 
 using namespace std;
 
-/*
-class node {
-    public:
-    int dim;
-    vector<vector<int>> qr;
 
-    node * right;
-    node * left;
-
-    node(int dim) : dim(dim), qr(dim, vector<int>(dim)) {}
-
-};
-*/
-
-vector<vector<int>> test;
+vector<vector<int>> saved;
 
 int countqrs = 0;
 
@@ -278,7 +265,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
     }
 
     if (j == dim) {
-        test = qr;
+        saved = qr;
         countqrs++;
         return true;
     }
@@ -301,24 +288,50 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
     return true;
 }
 
+void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+    
+    for (int i = 0; i < n; i++) {
+        if (lb[i] == 0) {
+            for (int j = 0; j < n; j++) {
+                (*visited)[i][j] = 1;
+            }
+        }
+        if (cb[i] == 0) {
+            for (int j = 0; j < n; j++) {
+                (*visited)[j][i] = 1;
+            }
+        }
+        if (lb[i] == n) {
+            for (int j = 0; j < n; j++) {
+                (*qr)[i][j] = 1;
+                (*visited)[i][j] = 1;
+            }
+        }
+        if (cb[i] == n) {
+            for (int j = 0; j < n; j++) {
+                (*qr)[j][i] = 1;
+                (*visited)[j][i] = 1;
+            }
+        }
+    }
+
+
+}
+
 void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
     countqrs = 0;
     vector<vector<int>> qr(n, vector<int>(n));
     vector<vector<int>> visited(n, vector<int>(n));
-    /*
-    for (int i = 9; i < 13; i++) {
-        for (int j = 0; j < 13; j++) {
-            visited[i][j] = 1;
-        }
-    }
-    */
+
+    pre_proc(&qr, &visited, n, lb, cb, lt, ct, qb, db);
+   
     rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
     
     if (countqrs == 0) {
         cout << "DEFECT: No QR Code generated!" << endl;
     } else if (countqrs == 1) {
         cout << "VALID: 1 QR Code generated!" << endl;
-        printQrCode(test, n);
+        printQrCode(saved, n);
     } else if (countqrs > 1) {
         cout << "INVALID: " << countqrs << " QR Codes generated!" << endl;
     }
