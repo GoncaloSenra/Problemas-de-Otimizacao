@@ -51,10 +51,11 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
 
     int tam, tam2;
 
-    if (dim % 2 == 0) 
+    if (dim % 2 == 0) {
         tam = (dim / 2); tam2 = (dim / 2);
-    if (dim % 2 != 0) 
+    } else {
         tam = (dim / 2); tam2 = (dim / 2) + 1;
+    }
 
     int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
 
@@ -129,13 +130,6 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
             return false;
         }
 
-
-        if (line == 1) {
-            if (dim - (line + 1) < (*db)[1]) {
-                return false;
-            }
-        }
-
     }
     /*
     //NOTE: LIVE LINHAS
@@ -161,43 +155,40 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
         if (col > 0 && dim - line < (*cb)[col - 1]) {
             return false;
         }
-        
-        //NOTE: QUADRANTS WHITES
-        int q1 = (tam * line) + (col - tam);
-        int q2 = (tam * line) + col;
-        int q3 = (tam * (line - tam)) + col;
-        int q4 = (tam * (line - tam)) + (col - tam);
-        if (col < tam - 1 && line < tam - 1) {
-            if ((aux2 - q2) < (*qb)[1]) {
-                return false;
-            }
-        } else if (col > tam - 1 && line < tam - 1) {
-            if ((aux1 - q1) < (*qb)[0]) {
-                return false;
-            }
-        } else if (col < tam - 1 && line > tam - 1) {
-            if ((aux3 - q3) < (*qb)[2]) {
-                return false;
-            }
-        } else if (col > tam - 1 && line > tam - 1) {
-            if ((aux4 - q4) < (*qb)[3]) {
-                return false;
-            }
-        }
 
-        //NOTE: WHITES DIAGONALS
-        if (line == col - 1) {
-            if (dim - (line + 1) < (*db)[0]) {
-                return false;
-            }
+        //NOTE: QUADRANTS WHITES    
+        int q1 = (tam * line) + (col - tam);    
+        int q2 = (tam * line) + col;    
+        int q3 = (tam * (line - tam)) + col;    
+        int q4 = (tam * (line - tam)) + (col - tam);    
+        if (col < tam - 1 && line < tam - 1) {    
+            if ((aux2 - q2) < (*qb)[1]) {    
+                return false;    
+            }    
+        } else if (col > tam - 1 && line < tam - 1) {    
+            if ((aux1 - q1) < (*qb)[0]) {    
+                return false;    
+            }    
+        } else if (col < tam - 1 && line > tam - 1) {    
+            if ((aux3 - q3) < (*qb)[2]) {    
+                return false;    
+            }    
+        } else if (col > tam - 1 && line > tam - 1) {    
+            if ((aux4 - q4) < (*qb)[3]) {    
+                return false;    
+            }    
+        }    
+        //NOTE: WHITES DIAGONALS    
+        if (line == col - 1) {    
+            if (dim - (line + 1) < (*db)[0]) {    
+                return false;    
+            }    
+        }    
+        if (line + col == dim) {    
+            if (dim - (line + 1) < (*db)[1]) {    
+                return false;    
+            }    
         }
-        if (line + col == dim) {
-            if (dim - (line + 1) < (*db)[1]) {
-                return false;
-            }
-        }
-
-
     }
 
 
@@ -323,10 +314,11 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
 
     int tam, tam2;
 
-    if (n % 2 == 0) 
+    if (n % 2 == 0) {
         tam = (n / 2); tam2 = (n / 2);
-    if (n % 2 != 0) 
+    } else {
         tam = (n / 2); tam2 = (n / 2) + 1;
+    }
 
     int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
     
@@ -404,87 +396,58 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
         }
     }
     
-    //NOTE: DIAGONALS
-    if(db[0] == 0){
-        for (int i = 0; i < n; i++) {
+    //FIXME: DIAGONAIS OTIMIZADAS (1 FOR) 
+    for (int i = 0; i < n; i++){
+        if(db[0] == 0){
             (*visited)[i][i] = -1;
-            (*qr)[i][i] = 0;       
+            (*qr)[i][i] = 0;
         }
-    }else if(db[0] == n){
-        for (int i = 0; i < n; i++){
+        if(db[0] == n){
             (*visited)[i][i] = 1;
             (*qr)[i][i] = 1;
         }
-    }
-
-    if(db[1] == 0){
-        for (int i = 0; i < n; i++) {
-            int indice = n-i-1;
-            (*visited)[i][indice] = -1;
-            (*qr)[i][indice] = 0;       
+        if(db[1] == 0){
+            (*visited)[i][n-i-1] = -1;
+            (*qr)[i][n-i-1] = 0;
         }
-    }else if(db[1] == n){
-        for (int i = 0; i < n; i++){
-            int indice = n-i-1;
-            (*visited)[i][indice] = 1;
-            (*qr)[i][indice] = 1;
+        if(db[1] == n){
+            (*visited)[i][n-i-1] = 1;
+            (*qr)[i][n-i-1] = 1;
         }
-    }
 
-
-    for (int i = 0; i < n; i++){
         if((*visited)[i][i] == 1){
             countDiagonal1++;
-        }
-    }
-    for (int i = 0; i < n; i++){
-        if((*visited)[i][i] == -1){
+        }else if((*visited)[i][i] == -1){
             countDiagonal0++;
         }
-    }
-    if (n - countDiagonal0 == db[0]) {
-        for (int i = 0; i < n; i++) {
+
+        if((*visited)[i][n - i -1] == 1){
+            countDiagonalInv1++;
+        }else if((*visited)[i][n - i -1] == -1){
+            countDiagonalInv0++;
+        }
+
+        if (n - countDiagonal0 == db[0]) {
             if ((*visited)[i][i] == 0) {
                 (*visited)[i][i] = 1;
                 (*qr)[i][i] = 1;
             }
-        }
-    }else if(countDiagonal1 == db[0]){
-        for (int i = 0; i < n; i++) {
+        }else if(countDiagonal1 == db[0]){
             if ((*visited)[i][i] == 0) {
                 (*visited)[i][i] = -1;
                 (*qr)[i][i] = 0;
             }
         }
-    }
 
-
-    for (int i = 0; i < n; i++){
-        int indice = n - i - 1;
-        if((*visited)[i][indice] == 1){
-            countDiagonalInv1++;
-        }
-    }
-    for (int i = 0; i < n; i++){
-        int indice = n - i - 1;
-        if((*visited)[i][indice] == -1){
-            countDiagonalInv0++;
-        }
-    }
-    if (n - countDiagonalInv0 == db[0]) {
-        for (int i = 0; i < n; i++) {
-            int indice = n - i - 1;
-            if ((*visited)[i][indice] == 0) {
-                (*visited)[i][indice] = 1;
-                (*qr)[i][indice] = 1;
+        if (n - countDiagonalInv0 == db[0]) {
+            if ((*visited)[i][n - i -1] == 0) {
+                (*visited)[i][n -i -1] = 1;
+                (*qr)[i][n-i-1] = 1;
             }
-        }
-    }else if(countDiagonalInv1 == db[0]){
-        for (int i = 0; i < n; i++) {
-            int indice = n - i - 1;
-            if ((*visited)[i][indice] == 0) {
-                (*visited)[i][indice] = -1;
-                (*qr)[i][indice] = 0;
+        }else if(countDiagonalInv1 == db[0]){
+            if ((*visited)[i][n - i - 1] == 0) {
+                (*visited)[i][n - i - 1] = -1;
+                (*qr)[i][n - i - 1] = 0;
             }
         }
     }
