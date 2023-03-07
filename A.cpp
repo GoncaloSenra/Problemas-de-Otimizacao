@@ -129,6 +129,13 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
             return false;
         }
 
+
+        if (line == 1) {
+            if (dim - (line + 1) < (*db)[1]) {
+                return false;
+            }
+        }
+
     }
     /*
     //NOTE: LIVE LINHAS
@@ -154,6 +161,43 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
         if (col > 0 && dim - line < (*cb)[col - 1]) {
             return false;
         }
+        
+        //NOTE: QUADRANTS WHITES
+        int q1 = (tam * line) + (col - tam);
+        int q2 = (tam * line) + col;
+        int q3 = (tam * (line - tam)) + col;
+        int q4 = (tam * (line - tam)) + (col - tam);
+        if (col < tam - 1 && line < tam - 1) {
+            if ((aux2 - q2) < (*qb)[1]) {
+                return false;
+            }
+        } else if (col > tam - 1 && line < tam - 1) {
+            if ((aux1 - q1) < (*qb)[0]) {
+                return false;
+            }
+        } else if (col < tam - 1 && line > tam - 1) {
+            if ((aux3 - q3) < (*qb)[2]) {
+                return false;
+            }
+        } else if (col > tam - 1 && line > tam - 1) {
+            if ((aux4 - q4) < (*qb)[3]) {
+                return false;
+            }
+        }
+
+        //NOTE: WHITES DIAGONALS
+        if (line == col - 1) {
+            if (dim - (line + 1) < (*db)[0]) {
+                return false;
+            }
+        }
+        if (line + col == dim) {
+            if (dim - (line + 1) < (*db)[1]) {
+                return false;
+            }
+        }
+
+
     }
 
 
