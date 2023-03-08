@@ -4,10 +4,9 @@
     Henrique Costa  nº 2020214120
 */
 
-
 #include <iostream>
 #include <vector>
-#include <algorithm>
+
 
 using namespace std;
 
@@ -50,7 +49,6 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 
 }
 
-//TODO: OTIMIZAR QUADRANTES e DIAGONAIS
 bool isValid(int dim, int line, int col) {
 
     int tam, tam2;
@@ -66,50 +64,7 @@ bool isValid(int dim, int line, int col) {
     if (line == 0 && col == 0)
         return true;
 
-    if (col > 0) {
-        if (qr[line][col - 1] == 1) {
-            lb[line]--;
-            cb[col - 1]--;
-            if (line == col - 1) {
-                db[0]--;
-            }
-            if (line + col == dim) {
-                db[1]--;
-            }
-
-            if (line <= (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                qb[1]--;
-            } else if (line <= (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                qb[0]--;
-            } else if (line > (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                qb[2]--;
-            } else if (line > (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                qb[3]--;
-            }
-
-            
-        } else {
-            lb[line]++;
-            cb[col - 1]++;
-            if (line == col - 1) {
-                db[0]++;
-            }
-            if (line + col == dim) {
-                db[1]++;
-            }
-
-            if (line <= (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                qb[1]++;
-            } else if (line <= (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                qb[0]++;
-            } else if (line > (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                qb[2]++;
-            } else if (line > (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                qb[3]++;
-            }
-
-        }
-
+    /*if (col > 0) {
         if (col > 1) {
             if (qr[line][col - 2] != qr[line][col - 1]) {
                 lt[line]--;
@@ -120,57 +75,19 @@ bool isValid(int dim, int line, int col) {
                 ct[col - 1]--;
             }
         }
+    } */
+    if (col == 0) {
         
-    } else {
-        if (qr[line - 1][dim - 1] == 1) {
-            lb[line - 1]--;
-            cb[dim - 1]--;
-            if (line - 1 == dim - 1) {
-                db[0]--;
-            }
-            if ((line - 1) + (dim) == dim) {
-                db[1]--;
-            }
-
-            if ((line - 1) <= (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                qb[1]--;
-            } else if ((line - 1) <= (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                qb[0]--;
-            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                qb[2]--;
-            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                qb[3]--;
-            }
-        } else {
-            lb[line - 1]++;
-            cb[dim - 1]++;
-            if (line - 1 == dim - 1) {
-                db[0]++;
-            }
-            if ((line - 1) + (dim) == dim) {
-                db[1]++;
-            }
-
-            if ((line - 1) <= (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                qb[1]++;
-            } else if ((line - 1) <= (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                qb[0]++;
-            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                qb[2]++;
-            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                qb[3]++;
-            }
-        }
+        // if (qr[line - 1][dim - 2] != qr[line - 1][dim - 1]) {
+        //     lt[line - 1]--;
+        // }
         
-        if (qr[line - 1][dim - 2] != qr[line - 1][dim - 1]) {
-            lt[line - 1]--;
-        }
+        // if (line > 1) {
+        //     if (qr[line - 1][dim - 1] != qr[line - 2][dim - 1]) {
+        //         ct[dim - 1]--;
+        //     }
+        // }
         
-        if (line > 1) {
-            if (qr[line - 1][dim - 1] != qr[line - 2][dim - 1]) {
-                ct[dim - 1]--;
-            }
-        }
 
         //NOTE: FINAL DE LINHA
         if (lb[line - 1] != 0 || lt[line - 1] != 0) {
@@ -178,21 +95,10 @@ bool isValid(int dim, int line, int col) {
         }
 
     }
-    /*
-    //NOTE: LIVE LINHAS
-    if (lb[line] < 0 || lt[line] < 0) {
-        return false;
-    }  
-    //NOTE: LIVE COLUNAS
-    if (col > 0) {
-        if (cb[col - 1] < 0 || ct[col - 1] < 0) {
-            return false;
-        }  
-    }*/
-
+    
 
     //NOTE: LIVE COUNTING
-    if (line != dim) {
+    if (line != dim && col > 0) {
         if (lb[line] < 0 || lt[line] < 0 || cb[col - 1] < 0 || ct[col - 1] < 0 || db[0] < 0 || db[1] < 0 || qb[0] < 0 || qb[1] < 0 || qb[2] < 0 || qb[3] < 0) {
             return false;
         }
@@ -239,7 +145,6 @@ bool isValid(int dim, int line, int col) {
         }
     }
     
-
     //NOTE: FINAL DE COLUNA
     if (line == dim - 1 && col > 0 ) {
         if (cb[col - 1] != 0 || ct[col - 1] != 0) {
@@ -265,9 +170,82 @@ bool isValid(int dim, int line, int col) {
 }
 
 
-bool rec(int dim, int i, int j) {
-    
-    /*
+void setBlack(int dim, int line, int col, int *x, int *y) {
+    lb[line]--;
+    cb[col]--;
+    if (line == col) {
+        db[0]--;
+    }
+    if (line + col == dim - 1) {
+        db[1]--;
+    }
+
+    if (line <= (dim / 2) - 1 && col <= (dim / 2) - 1) {
+        qb[1]--;
+    } else if (line <= (dim / 2) - 1 && col > (dim / 2) - 1) {
+        qb[0]--;
+    } else if (line > (dim / 2) - 1 && col <= (dim / 2) - 1) {
+        qb[2]--;
+    } else if (line > (dim / 2) - 1 && col > (dim / 2) - 1) {
+        qb[3]--;
+    }
+
+    if (col > 0) {
+        if (qr[line][col - 1] != 1) {
+            lt[line]--;
+            (*x)--;
+        }
+    }
+    if (line > 0) {
+        if (qr[line - 1][col] != 1) {
+            ct[col]--;
+            (*y)--;
+        }
+    }
+}
+
+void setWhite(int dim, int line, int col, int *x, int *y) {
+    lb[line]++;
+    cb[col]++;
+    if (line == col) {
+        db[0]++;
+    }
+    if (line + col == dim - 1) {
+        db[1]++;
+    }
+
+    if (line <= (dim / 2) - 1 && col <= (dim / 2) - 1) {
+        qb[1]++;
+    } else if (line <= (dim / 2) - 1 && col > (dim / 2) - 1) {
+        qb[0]++;
+    } else if (line > (dim / 2) - 1 && col <= (dim / 2) - 1) {
+        qb[2]++;
+    } else if (line > (dim / 2) - 1 && col > (dim / 2) - 1) {
+        qb[3]++;
+    }
+
+    if (col > 0) {
+        if (qr[line][col - 1] != 0) {
+            lt[line]--;
+            (*x)--;
+        } else {
+            lt[line]++;
+            (*x)++;
+        }
+    }
+    if (line > 0) {
+        if (qr[line - 1][col] != 0) {
+            ct[col]--;
+            (*y)--;
+        } else {
+            ct[col]++;
+            (*y)++;
+        }
+    }
+}
+
+bool rec(int dim, int i, int j, int x, int y) {
+
     if (qr[0][0] == 1 && qr[0][1] == 0 && qr[0][2] == 1 && qr[0][3] == 0){
         cout << "debug";
         if (qr[1][0] == 1 && qr[1][1] == 0 && qr[1][2] == 1 && qr[1][3] == 0){
@@ -280,16 +258,17 @@ bool rec(int dim, int i, int j) {
             }
         }
     }
-    */
+    
     if (i == dim) {
         i = 0;
+        lt[j] = x;
         j++;
+        x = lt[j];
     }
     
     if (!isValid(dim, j, i)){
         return false;
     }
-
     if (j == dim) {
         saved = qr;
         countqrs++;
@@ -299,15 +278,18 @@ bool rec(int dim, int i, int j) {
     if (visited[j][i] == 0) {
         qr[j][i] = 1;
         visited[j][i] = 1;
-        rec(dim, i + 1, j);
+        setBlack(dim, j, i, &x, &y);
+        rec(dim, i + 1, j, x, y);
         qr[j][i] = 0;
         visited[j][i] = 0;
-        rec(dim, i + 1, j);
+        setWhite(dim , j, i, &x, &y);
+        rec(dim, i + 1, j, x, y);
     } else {
         //TODO: if lb == 0 passar a linha
-        rec(dim, i + 1, j);
+        rec(dim, i + 1, j, x, y);
     }
     
+    lt[j] = x;
     return true;
 }
 
@@ -570,7 +552,7 @@ void func(int n) {
     
 
     if (aux == 1)
-        rec(n, 0, 0);
+        rec(n, 0, 0, lt[0], ct[0]);
     else
         saved = qr;
 
