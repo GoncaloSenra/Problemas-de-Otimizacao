@@ -14,6 +14,10 @@ using namespace std;
 
 vector<vector<int>> saved;
 
+vector<int> lb, cb, lt, ct, qb, db;
+vector<vector<int>> qr;
+vector<vector<int>> visited;
+
 int countqrs = 0;
 
 void printQrCode(vector<vector<int>> qr, int dim) {
@@ -47,7 +51,7 @@ void printQrCode(vector<vector<int>> qr, int dim) {
 }
 
 //TODO: OTIMIZAR QUADRANTES e DIAGONAIS
-bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb, vector<int> *cb, vector<int> *lt, vector<int> *ct, vector<int> *qb, vector<int> *db) {
+bool isValid(int dim, int line, int col) {
 
     int tam, tam2;
 
@@ -64,95 +68,139 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
 
     if (col > 0) {
         if (qr[line][col - 1] == 1) {
-            (*lb)[line]--;
-            (*cb)[col - 1]--;
+            lb[line]--;
+            cb[col - 1]--;
             if (line == col - 1) {
-                (*db)[0]--;
+                db[0]--;
             }
             if (line + col == dim) {
-                (*db)[1]--;
+                db[1]--;
             }
 
             if (line <= (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                (*qb)[1]--;
+                qb[1]--;
             } else if (line <= (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                (*qb)[0]--;
+                qb[0]--;
             } else if (line > (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
-                (*qb)[2]--;
+                qb[2]--;
             } else if (line > (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
-                (*qb)[3]--;
+                qb[3]--;
             }
+
+            
+        } else {
+            lb[line]++;
+            cb[col - 1]++;
+            if (line == col - 1) {
+                db[0]++;
+            }
+            if (line + col == dim) {
+                db[1]++;
+            }
+
+            if (line <= (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
+                qb[1]++;
+            } else if (line <= (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
+                qb[0]++;
+            } else if (line > (dim / 2) - 1 && col - 1 <= (dim / 2) - 1) {
+                qb[2]++;
+            } else if (line > (dim / 2) - 1 && col - 1 > (dim / 2) - 1) {
+                qb[3]++;
+            }
+
         }
+
         if (col > 1) {
             if (qr[line][col - 2] != qr[line][col - 1]) {
-                (*lt)[line]--;
+                lt[line]--;
             }
         }
         if (line > 0) {
             if (qr[line][col - 1] != qr[line - 1][col - 1]) {
-                (*ct)[col - 1]--;
+                ct[col - 1]--;
             }
         }
+        
     } else {
         if (qr[line - 1][dim - 1] == 1) {
-            (*lb)[line - 1]--;
-            (*cb)[dim - 1]--;
+            lb[line - 1]--;
+            cb[dim - 1]--;
             if (line - 1 == dim - 1) {
-                (*db)[0]--;
+                db[0]--;
             }
             if ((line - 1) + (dim) == dim) {
-                (*db)[1]--;
+                db[1]--;
             }
 
             if ((line - 1) <= (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                (*qb)[1]--;
+                qb[1]--;
             } else if ((line - 1) <= (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                (*qb)[0]--;
+                qb[0]--;
             } else if ((line - 1) > (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
-                (*qb)[2]--;
+                qb[2]--;
             } else if ((line - 1) > (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
-                (*qb)[3]--;
+                qb[3]--;
+            }
+        } else {
+            lb[line - 1]++;
+            cb[dim - 1]++;
+            if (line - 1 == dim - 1) {
+                db[0]++;
+            }
+            if ((line - 1) + (dim) == dim) {
+                db[1]++;
+            }
+
+            if ((line - 1) <= (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
+                qb[1]++;
+            } else if ((line - 1) <= (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
+                qb[0]++;
+            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 <= (dim / 2) - 1) {
+                qb[2]++;
+            } else if ((line - 1) > (dim / 2) - 1 && dim - 1 > (dim / 2) - 1) {
+                qb[3]++;
             }
         }
         
         if (qr[line - 1][dim - 2] != qr[line - 1][dim - 1]) {
-            (*lt)[line - 1]--;
+            lt[line - 1]--;
         }
         
         if (line > 1) {
             if (qr[line - 1][dim - 1] != qr[line - 2][dim - 1]) {
-                (*ct)[dim - 1]--;
+                ct[dim - 1]--;
             }
         }
 
         //NOTE: FINAL DE LINHA
-        if ((*lb)[line - 1] != 0 || (*lt)[line - 1] != 0) {
+        if (lb[line - 1] != 0 || lt[line - 1] != 0) {
             return false;
         }
 
     }
     /*
     //NOTE: LIVE LINHAS
-    if ((*lb)[line] < 0 || (*lt)[line] < 0) {
+    if (lb[line] < 0 || lt[line] < 0) {
         return false;
     }  
     //NOTE: LIVE COLUNAS
     if (col > 0) {
-        if ((*cb)[col - 1] < 0 || (*ct)[col - 1] < 0) {
+        if (cb[col - 1] < 0 || ct[col - 1] < 0) {
             return false;
         }  
     }*/
 
+
     //NOTE: LIVE COUNTING
     if (line != dim) {
-        if ((*lb)[line] < 0 || (*lt)[line] < 0 || (*cb)[col - 1] < 0 || (*ct)[col - 1] < 0 || (*db)[0] < 0 || (*db)[1] < 0 || (*qb)[0] < 0 || (*qb)[1] < 0 || (*qb)[2] < 0 || (*qb)[3] < 0) {
+        if (lb[line] < 0 || lt[line] < 0 || cb[col - 1] < 0 || ct[col - 1] < 0 || db[0] < 0 || db[1] < 0 || qb[0] < 0 || qb[1] < 0 || qb[2] < 0 || qb[3] < 0) {
             return false;
         }
         //NOTE: COUNT WHITES
-        if (col > 0 && dim - col < (*lb)[line]){
+        if (col > 0 && dim - col < lb[line]){
             return false;
         }
-        if (col > 0 && dim - line < (*cb)[col - 1]) {
+        if (col > 0 && dim - line < cb[col - 1]) {
             return false;
         }
 
@@ -162,53 +210,53 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
         int q3 = (tam * (line - tam)) + col;    
         int q4 = (tam * (line - tam)) + (col - tam);    
         if (col < tam - 1 && line < tam - 1) {    
-            if ((aux2 - q2) < (*qb)[1]) {    
+            if ((aux2 - q2) < qb[1]) {    
                 return false;    
             }    
         } else if (col > tam - 1 && line < tam - 1) {    
-            if ((aux1 - q1) < (*qb)[0]) {    
+            if ((aux1 - q1) < qb[0]) {    
                 return false;    
             }    
         } else if (col < tam - 1 && line > tam - 1) {    
-            if ((aux3 - q3) < (*qb)[2]) {    
+            if ((aux3 - q3) < qb[2]) {    
                 return false;    
             }    
         } else if (col > tam - 1 && line > tam - 1) {    
-            if ((aux4 - q4) < (*qb)[3]) {    
+            if ((aux4 - q4) < qb[3]) {    
                 return false;    
             }    
         }    
         //NOTE: WHITES DIAGONALS    
         if (line == col - 1) {    
-            if (dim - (line + 1) < (*db)[0]) {    
+            if (dim - (line + 1) < db[0]) {    
                 return false;    
             }    
         }    
         if (line + col == dim) {    
-            if (dim - (line + 1) < (*db)[1]) {    
+            if (dim - (line + 1) < db[1]) {    
                 return false;    
             }    
         }
     }
-
+    
 
     //NOTE: FINAL DE COLUNA
     if (line == dim - 1 && col > 0 ) {
-        if ((*cb)[col - 1] != 0 || (*ct)[col - 1] != 0) {
+        if (cb[col - 1] != 0 || ct[col - 1] != 0) {
             return false;
         }
     }
 
     //NOTE: FINAL DE CONTRA-DIAGONAL
     if (line == dim - 1 && col == 1){
-        if ((*db)[1] != 0) {
+        if (db[1] != 0) {
             return false;
         }
     }
 
     //NOTE: FINAL DA MATRIZ
     if (line == dim) {
-        if ((*cb)[dim - 1] != 0 || (*db)[0] != 0 || (*qb)[0] != 0 || (*qb)[1] != 0 || (*qb)[2] != 0 || (*qb)[3] != 0 || (*ct)[dim - 1] != 0) {
+        if (cb[dim - 1] != 0 || db[0] != 0 || qb[0] != 0 || qb[1] != 0 || qb[2] != 0 || qb[3] != 0 || ct[dim - 1] != 0) {
             return false;
         }
     }
@@ -217,7 +265,7 @@ bool isValid(vector<vector<int>> qr, int dim, int line, int col, vector<int> *lb
 }
 
 
-bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, int j, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+bool rec(int dim, int i, int j) {
     
     /*
     if (qr[0][0] == 1 && qr[0][1] == 0 && qr[0][2] == 1 && qr[0][3] == 0){
@@ -238,7 +286,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
         j++;
     }
     
-    if (!isValid(qr, dim, j, i, &lb, &cb, &lt, &ct, &qb, &db)){
+    if (!isValid(dim, j, i)){
         return false;
     }
 
@@ -251,18 +299,19 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
     if (visited[j][i] == 0) {
         qr[j][i] = 1;
         visited[j][i] = 1;
-        rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
+        rec(dim, i + 1, j);
         qr[j][i] = 0;
         visited[j][i] = 0;
-        rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
+        rec(dim, i + 1, j);
     } else {
-        rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
+        //TODO: if lb == 0 passar a linha
+        rec(dim, i + 1, j);
     }
     
     return true;
 }
 
-void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+void pre_proc(int n) {
     
     int countLines1 = 0; 
     int countCols1 = 0; 
@@ -284,30 +333,30 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
             idxLines[i] = 1;
             countLines0++;
             for (int j = 0; j < n; j++) {
-                (*visited)[i][j] = -1;
+                visited[i][j] = -1;
             }
         }
         if (cb[i] == 0) {
             idxCols[i] = 1;
             countCols0++;
             for (int j = 0; j < n; j++) {
-                (*visited)[j][i] = -1;
+                visited[j][i] = -1;
             }
         }
         if (lb[i] == n) {
             idxLines[i] = 2;
             countLines1++;
             for (int j = 0; j < n; j++) {
-                (*qr)[i][j] = 1;
-                (*visited)[i][j] = 1;
+                qr[i][j] = 1;
+                visited[i][j] = 1;
             }
         }
         if (cb[i] == n) {
             idxCols[i] = 2;
             countCols1++;
             for (int j = 0; j < n; j++) {
-                (*qr)[j][i] = 1;
-                (*visited)[j][i] = 1;
+                qr[j][i] = 1;
+                visited[j][i] = 1;
             }
         }
     }
@@ -326,17 +375,17 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     if (qb[0] == aux1) {
         for (int i = 0; i < tam; i++) {
             for (int j = tam ; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
-                    (*qr)[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = 1;
+                    qr[i][j] = 1;
                 }
             }
         }
     } else if (qb[0] == 0) {
         for (int i = 0; i < tam; i++) {
             for (int j = tam ; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = -1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = -1;
                 }
             }
         }
@@ -344,17 +393,17 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     if (qb[1] == aux2) {
         for (int i = 0; i < tam; i++) {
             for (int j = 0 ; j < tam; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
-                    (*qr)[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = 1;
+                    qr[i][j] = 1;
                 }
             }
         }
     } else if (qb[1] == 0) {
         for (int i = 0; i < tam; i++) {
             for (int j = 0 ; j < tam; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = -1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = -1;
                 }
             }
         }
@@ -362,17 +411,17 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     if (qb[2] == aux3) {
         for (int i = tam; i < n; i++) {
             for (int j = 0 ; j < tam; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
-                    (*qr)[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = 1;
+                    qr[i][j] = 1;
                 }
             }
         }
     } else if (qb[2] == 0) {
         for (int i = tam; i < n; i++) {
             for (int j = 0 ; j < tam; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = -1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = -1;
                 }
             }
         }
@@ -380,17 +429,17 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     if (qb[3] == aux4) {
         for (int i = tam; i < n; i++) {
             for (int j = tam ; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
-                    (*qr)[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = 1;
+                    qr[i][j] = 1;
                 }
             }
         }
     } else if (qb[3] == 0) {
         for (int i = tam; i < n; i++) {
             for (int j = tam ; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = -1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = -1;
                 }
             }
         }
@@ -399,55 +448,55 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     //FIXME: DIAGONAIS OTIMIZADAS (1 FOR) 
     for (int i = 0; i < n; i++){
         if(db[0] == 0){
-            (*visited)[i][i] = -1;
-            (*qr)[i][i] = 0;
+            visited[i][i] = -1;
+            qr[i][i] = 0;
         }
         if(db[0] == n){
-            (*visited)[i][i] = 1;
-            (*qr)[i][i] = 1;
+            visited[i][i] = 1;
+            qr[i][i] = 1;
         }
         if(db[1] == 0){
-            (*visited)[i][n-i-1] = -1;
-            (*qr)[i][n-i-1] = 0;
+            visited[i][n-i-1] = -1;
+            qr[i][n-i-1] = 0;
         }
         if(db[1] == n){
-            (*visited)[i][n-i-1] = 1;
-            (*qr)[i][n-i-1] = 1;
+            visited[i][n-i-1] = 1;
+            qr[i][n-i-1] = 1;
         }
 
-        if((*visited)[i][i] == 1){
+        if(visited[i][i] == 1){
             countDiagonal1++;
-        }else if((*visited)[i][i] == -1){
+        }else if(visited[i][i] == -1){
             countDiagonal0++;
         }
 
-        if((*visited)[i][n - i -1] == 1){
+        if(visited[i][n - i -1] == 1){
             countDiagonalInv1++;
-        }else if((*visited)[i][n - i -1] == -1){
+        }else if(visited[i][n - i -1] == -1){
             countDiagonalInv0++;
         }
 
         if (n - countDiagonal0 == db[0]) {
-            if ((*visited)[i][i] == 0) {
-                (*visited)[i][i] = 1;
-                (*qr)[i][i] = 1;
+            if (visited[i][i] == 0) {
+                visited[i][i] = 1;
+                qr[i][i] = 1;
             }
         }else if(countDiagonal1 == db[0]){
-            if ((*visited)[i][i] == 0) {
-                (*visited)[i][i] = -1;
-                (*qr)[i][i] = 0;
+            if (visited[i][i] == 0) {
+                visited[i][i] = -1;
+                qr[i][i] = 0;
             }
         }
 
         if (n - countDiagonalInv0 == db[0]) {
-            if ((*visited)[i][n - i -1] == 0) {
-                (*visited)[i][n -i -1] = 1;
-                (*qr)[i][n-i-1] = 1;
+            if (visited[i][n - i -1] == 0) {
+                visited[i][n -i -1] = 1;
+                qr[i][n-i-1] = 1;
             }
         }else if(countDiagonalInv1 == db[0]){
-            if ((*visited)[i][n - i - 1] == 0) {
-                (*visited)[i][n - i - 1] = -1;
-                (*qr)[i][n - i - 1] = 0;
+            if (visited[i][n - i - 1] == 0) {
+                visited[i][n - i - 1] = -1;
+                qr[i][n - i - 1] = 0;
             }
         }
     }
@@ -458,33 +507,33 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     for (int i = 0; i < n; i++) {
         if (n - countLines0 == cb[i]) {
             for (int j = 0; j < n; j++) {
-                if ((*visited)[j][i] == 0) {
-                    (*visited)[j][i] = 1;
-                    (*qr)[j][i] = 1;
+                if (visited[j][i] == 0) {
+                    visited[j][i] = 1;
+                    qr[j][i] = 1;
                 }
             }
         }
         if (n - countLines1 == cb[i]) {
             for (int j = 0; j < n; j++) {
-                if ((*visited)[j][i] == 0) {
-                    (*visited)[j][i] = -1;
-                    (*qr)[j][i] = 0;
+                if (visited[j][i] == 0) {
+                    visited[j][i] = -1;
+                    qr[j][i] = 0;
                 }
             }
         }
         if (n - countCols1 == lb[i]) {
             for (int j = 0; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = -1;
-                    (*qr)[i][j] = 0;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = -1;
+                    qr[i][j] = 0;
                 }
             }
         }
         if (n - countCols0 == lb[i]) {
             for (int j = 0; j < n; j++) {
-                if ((*visited)[i][j] == 0) {
-                    (*visited)[i][j] = 1;
-                    (*qr)[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    visited[i][j] = 1;
+                    qr[i][j] = 1;
                 }
             }
         }
@@ -495,13 +544,14 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
     idxCols.clear();
 }
 
-void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct, vector<int> qb, vector<int> db) {
+void func(int n) {
     countqrs = 0;
     int aux = 0;
-    vector<vector<int>> qr(n, vector<int>(n));
-    vector<vector<int>> visited(n, vector<int>(n));
+    qr = vector<vector<int>>(n, vector<int>(n, 0));
+    visited = vector<vector<int>>(n, vector<int>(n, 0));
 
-    pre_proc(&qr, &visited, n, lb, cb, lt, ct, qb, db);
+
+    //pre_proc(n);
 
     //TODO: Se a matriz visited estiver totalmente preenchida a 1 na entrar no rec!
 
@@ -520,7 +570,7 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
     
 
     if (aux == 1)
-        rec(qr, visited, n, 0, 0, lb, cb, lt, ct, qb, db);
+        rec(n, 0, 0);
     else
         saved = qr;
 
@@ -547,7 +597,6 @@ int main() {
     cout.tie(NULL);
 
     int num, n, aux;
-    vector<int> lb, cb, lt, ct, qb, db;
 
     cin >> num;
 
@@ -578,7 +627,7 @@ int main() {
             db.push_back(aux);
         }
 
-        func(n, lb, cb, lt, ct, qb, db);
+        func(n);
         lb.clear();
         cb.clear();
         lt.clear();
