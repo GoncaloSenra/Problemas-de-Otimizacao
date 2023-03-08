@@ -1,4 +1,3 @@
-
 /*
     Gonçalo Senra   nº 2020213750
     Henrique Costa  nº 2020214120
@@ -99,7 +98,7 @@ bool isValid(int dim, int line, int col) {
 
     //NOTE: LIVE COUNTING
     if (line != dim && col > 0) {
-        if (lb[line] < 0 || lt[line] < 0 || cb[col - 1] < 0 || ct[col - 1] < 0 || db[0] < 0 || db[1] < 0 || qb[0] < 0 || qb[1] < 0 || qb[2] < 0 || qb[3] < 0) {
+        if (lb[line] < 0 || /*lt[line] < -1 ||*/ cb[col - 1] < 0 || /*ct[col - 1] < -1 ||*/ db[0] < 0 || db[1] < 0 || qb[0] < 0 || qb[1] < 0 || qb[2] < 0 || qb[3] < 0) {
             return false;
         }
         //NOTE: COUNT WHITES
@@ -170,7 +169,7 @@ bool isValid(int dim, int line, int col) {
 }
 
 
-void setBlack(int dim, int line, int col, int *x, int *y) {
+void setBlack(int dim, int line, int col) {
     lb[line]--;
     cb[col]--;
     if (line == col) {
@@ -190,21 +189,53 @@ void setBlack(int dim, int line, int col, int *x, int *y) {
         qb[3]--;
     }
 
-    if (col > 0) {
-        if (qr[line][col - 1] != 1) {
+    if (col > 0 && col <= dim -2) {
+        if(qr[line][col -1] == 1 && qr[line][col +1] == 1){
+            lt[line] += 2;
+            
+        }else if(1 != qr[line][col-1] && 1 != qr[line][col+1]){
+            lt[line] -= 2;
+        }
+    }else if(col == dim - 1){
+        if(0 != qr[line][col-1]){
+            lt[line]++;
+        }else{
             lt[line]--;
-            (*x)--;
+        }
+    }else if (col == 0){
+        if (0 != qr[line][col +1]){
+            lt[line]++;
+        }else{
+            lt[line]--;
         }
     }
-    if (line > 0) {
-        if (qr[line - 1][col] != 1) {
+
+    if (line > 0 && line <= dim -2) {
+        if(qr[line - 1][col] == 1 && qr[line + 1][col] == 1){
+            ct[col] += 2;
+            
+        }else if(1 != qr[line - 1][col] && 1 != qr[line + 1][col]){
+            ct[col] -= 2;
+        }
+    }else if(line == dim - 1){
+        if(0 != qr[line - 1][col]){
+            ct[col]++;
+        }else{
             ct[col]--;
-            (*y)--;
+        }
+    }else if (line == 0){
+        if (0 != qr[line + 1][col]){
+            ct[col]++;
+        }else{
+            ct[col]--;
         }
     }
+
+
+
 }
 
-void setWhite(int dim, int line, int col, int *x, int *y) {
+void setWhite(int dim, int line, int col) {
     lb[line]++;
     cb[col]++;
     if (line == col) {
@@ -224,72 +255,89 @@ void setWhite(int dim, int line, int col, int *x, int *y) {
         qb[3]++;
     }
 
-    if (col > 0) {
-        if (qr[line][col - 1] != 0) {
+    if (col > 0 && col <= dim -2) {
+        if(qr[line][col -1] == 1 && qr[line][col +1] == 1){
+            lt[line] -= 2;
+            
+        }else if(1 != qr[line][col-1] && 1 != qr[line][col+1]){
+            lt[line] += 2;
+        }
+    }else if(col == dim - 1){
+        if(0 != qr[line][col-1]){
             lt[line]--;
-            (*x)--;
-        } else {
+        }else{
             lt[line]++;
-            (*x)++;
+        }
+    }else if (col == 0){
+        if (0 != qr[line][col +1]){
+            lt[line]--;
+        }else{
+            lt[line]++;
         }
     }
-    if (line > 0) {
-        if (qr[line - 1][col] != 0) {
+
+    if (line > 0 && line <= dim -2) {
+        if(qr[line - 1][col] == 1 && qr[line + 1][col] == 1){
+            ct[col] -= 2;
+            
+        }else if(1 != qr[line - 1][col] && 1 != qr[line + 1][col]){
+            ct[col] += 2;
+        }
+    }else if(line == dim - 1){
+        if(0 != qr[line - 1][col]){
             ct[col]--;
-            (*y)--;
-        } else {
+        }else{
             ct[col]++;
-            (*y)++;
+        }
+    }else if (line == 0){
+        if (0 != qr[line + 1][col]){
+            ct[col]--;
+        }else{
+            ct[col]++;
         }
     }
+
+    // if(col > 0){
+    //     if (qr[line][col - 1] == 0 && qr[line][col] == 1 || qr[line][col - 1] == 1 && qr[line][col] == 0)
+    //     {
+    //         lt[line]++;
+    //     }
+    // }
 }
 
-bool rec(int dim, int i, int j, int x, int y) {
 
-    if (qr[0][0] == 1 && qr[0][1] == 0 && qr[0][2] == 1 && qr[0][3] == 0){
-        cout << "debug";
-        if (qr[1][0] == 1 && qr[1][1] == 0 && qr[1][2] == 1 && qr[1][3] == 0){
-            cout << "";
-            if (qr[2][0] == 0 && qr[2][1] == 1 && qr[2][2] == 0 && qr[2][3] == 1){
-                cout << "";
-                if (qr[3][0] == 0 && qr[3][1] == 1 && qr[3][2] == 0 && qr[3][3] == 1){
-                    cout << "";
-                }
-            }
-        }
-    }
+bool rec(int dim, int i, int j) {
     
     if (i == dim) {
         i = 0;
-        lt[j] = x;
         j++;
-        x = lt[j];
     }
     
     if (!isValid(dim, j, i)){
         return false;
     }
+
+
     if (j == dim) {
         saved = qr;
         countqrs++;
         return true;
-    }
-
+    } 
+    
     if (visited[j][i] == 0) {
         qr[j][i] = 1;
         visited[j][i] = 1;
-        setBlack(dim, j, i, &x, &y);
-        rec(dim, i + 1, j, x, y);
+        setBlack(dim, j, i);
+        rec(dim, i + 1, j);
         qr[j][i] = 0;
         visited[j][i] = 0;
-        setWhite(dim , j, i, &x, &y);
-        rec(dim, i + 1, j, x, y);
+        setWhite(dim , j, i);
+        rec(dim, i + 1, j);
     } else {
         //TODO: if lb == 0 passar a linha
-        rec(dim, i + 1, j, x, y);
+        rec(dim, i + 1, j);
     }
     
-    lt[j] = x;
     return true;
 }
 
@@ -330,6 +378,7 @@ void pre_proc(int n) {
             countLines1++;
             for (int j = 0; j < n; j++) {
                 qr[i][j] = 1;
+                setBlack(n, i, j);
                 visited[i][j] = 1;
             }
         }
@@ -338,6 +387,7 @@ void pre_proc(int n) {
             countCols1++;
             for (int j = 0; j < n; j++) {
                 qr[j][i] = 1;
+                setBlack(n, i, j);
                 visited[j][i] = 1;
             }
         }
@@ -360,6 +410,7 @@ void pre_proc(int n) {
                 if (visited[i][j] == 0) {
                     visited[i][j] = 1;
                     qr[i][j] = 1;
+                    setBlack(n, i, j);
                 }
             }
         }
@@ -378,6 +429,7 @@ void pre_proc(int n) {
                 if (visited[i][j] == 0) {
                     visited[i][j] = 1;
                     qr[i][j] = 1;
+                    setBlack(n, i, j);
                 }
             }
         }
@@ -396,6 +448,7 @@ void pre_proc(int n) {
                 if (visited[i][j] == 0) {
                     visited[i][j] = 1;
                     qr[i][j] = 1;
+                    setBlack(n, i, j);
                 }
             }
         }
@@ -414,6 +467,7 @@ void pre_proc(int n) {
                 if (visited[i][j] == 0) {
                     visited[i][j] = 1;
                     qr[i][j] = 1;
+                    setBlack(n, i, j);
                 }
             }
         }
@@ -436,6 +490,7 @@ void pre_proc(int n) {
         if(db[0] == n){
             visited[i][i] = 1;
             qr[i][i] = 1;
+            setBlack(n, i, n-i-1);
         }
         if(db[1] == 0){
             visited[i][n-i-1] = -1;
@@ -444,6 +499,7 @@ void pre_proc(int n) {
         if(db[1] == n){
             visited[i][n-i-1] = 1;
             qr[i][n-i-1] = 1;
+            setBlack(n, i, n-i-1);
         }
 
         if(visited[i][i] == 1){
@@ -462,6 +518,8 @@ void pre_proc(int n) {
             if (visited[i][i] == 0) {
                 visited[i][i] = 1;
                 qr[i][i] = 1;
+                setBlack(n, i, i);
+                
             }
         }else if(countDiagonal1 == db[0]){
             if (visited[i][i] == 0) {
@@ -474,6 +532,7 @@ void pre_proc(int n) {
             if (visited[i][n - i -1] == 0) {
                 visited[i][n -i -1] = 1;
                 qr[i][n-i-1] = 1;
+                setBlack(n, i, n-i-1);
             }
         }else if(countDiagonalInv1 == db[0]){
             if (visited[i][n - i - 1] == 0) {
@@ -483,8 +542,6 @@ void pre_proc(int n) {
         }
     }
     
-
-
     //NOTE:
     for (int i = 0; i < n; i++) {
         if (n - countLines0 == cb[i]) {
@@ -492,6 +549,7 @@ void pre_proc(int n) {
                 if (visited[j][i] == 0) {
                     visited[j][i] = 1;
                     qr[j][i] = 1;
+                    setBlack(n, j, i);
                 }
             }
         }
@@ -516,6 +574,7 @@ void pre_proc(int n) {
                 if (visited[i][j] == 0) {
                     visited[i][j] = 1;
                     qr[i][j] = 1;
+                    setBlack(n, i, j);
                 }
             }
         }
@@ -533,7 +592,7 @@ void func(int n) {
     visited = vector<vector<int>>(n, vector<int>(n, 0));
 
 
-    //pre_proc(n);
+    pre_proc(n);
 
     //TODO: Se a matriz visited estiver totalmente preenchida a 1 na entrar no rec!
 
@@ -552,7 +611,7 @@ void func(int n) {
     
 
     if (aux == 1)
-        rec(n, 0, 0, lt[0], ct[0]);
+        rec(n, 0, 0);
     else
         saved = qr;
 
