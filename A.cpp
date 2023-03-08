@@ -516,31 +516,32 @@ void pre_proc(int n) {
 
         if (n - countDiagonal0 == db[0]) {
             if (visited[i][i] == 0) {
-                visited[i][i] = 1;
-                qr[i][i] = 1;
-                setBlack(n, i, i);
+                visited[i][i] = -1;
+                qr[i][i] = 0;
                 
             }
         }else if(countDiagonal1 == db[0]){
             if (visited[i][i] == 0) {
-                visited[i][i] = -1;
-                qr[i][i] = 0;
+                visited[i][i] = 1;
+                qr[i][i] = 1;
+                setBlack(n, i, i);
             }
         }
 
         if (n - countDiagonalInv0 == db[0]) {
             if (visited[i][n - i -1] == 0) {
                 visited[i][n -i -1] = 1;
-                qr[i][n-i-1] = 1;
-                setBlack(n, i, n-i-1);
+                qr[i][n - i - 1] = 0;
             }
         }else if(countDiagonalInv1 == db[0]){
             if (visited[i][n - i - 1] == 0) {
                 visited[i][n - i - 1] = -1;
-                qr[i][n - i - 1] = 0;
+                qr[i][n-i-1] = 1;
+                setBlack(n, i, n-i-1);
             }
         }
     }
+    
     
     //NOTE:
     for (int i = 0; i < n; i++) {
