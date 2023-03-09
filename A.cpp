@@ -5,20 +5,21 @@
 
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 
 using namespace std;
 
 
-vector<vector<int>> saved;
+int saved[30][30];
+int qr[30][30];
+int visited[30][30];
 
 vector<int> lb, cb, lt, ct, qb, db;
-vector<vector<int>> qr;
-vector<vector<int>> visited;
 
 int countqrs = 0;
 
-void printQrCode(vector<vector<int>> qr, int dim) {
+void printQrCode(int dim) {
 
     for (int i = 0; i < dim + 2; i++) {
         for (int j = 0; j < dim + 2; j++) {
@@ -36,9 +37,9 @@ void printQrCode(vector<vector<int>> qr, int dim) {
                 } else if (j == dim +1) {
                     cout << "|\n";
                 } else {
-                    if (qr[i-1][j-1] == 0) {
+                    if (saved[i-1][j-1] == 0) {
                         cout << " ";
-                    } else if (qr[i-1][j-1] == 1) {
+                    } else if (saved[i-1][j-1] == 1) {
                         cout << "#";
                     }
                 }
@@ -325,7 +326,11 @@ bool rec(int dim, int i, int j) {
 
 
     if (j == dim) {
-        saved = qr;
+        for (int k = 0;  k < dim; k++) {
+            for (int l = 0; l < dim; l++) {
+                saved[k][l] = qr[k][l];
+            }
+        }
         //printQrCode(saved, dim);
         countqrs++;
         return true;
@@ -638,24 +643,49 @@ void pre_proc(int n) {
     idxCols.clear();
 }
 
+bool defect (int dim) {
+
+    int tam, tam2;
+
+    if (dim % 2 == 0) {
+        tam = (dim / 2); tam2 = (dim / 2);
+    } else {
+        tam = (dim / 2); tam2 = (dim / 2) + 1;
+    }
+
+    int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
+
+    if (db[0] > dim || db[1] > dim || qb[0] > aux1 || qb[1] > aux2 || qb[2] > aux3 || qb[3] > aux4){
+        return true;
+    }
+
+    for (int i = 0; i < dim; i++) {
+        if (lb[i] > dim || cb[i] > dim || lt[i] > dim - 1 || ct[i] > dim - 1) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
 void func(int n) {
     countqrs = 0;
     int aux = 0;
-    qr = vector<vector<int>>(n, vector<int>(n, 0));
-    visited = vector<vector<int>>(n, vector<int>(n, 0));
+    memset(qr, 0, sizeof(qr));
+    memset(visited, 0, sizeof(visited));
+    memset(saved, 0, sizeof(saved));
 
+    if (defect(n)) {
+        cout << "DEFECT: No QR Code generated!" << endl;
+        return;
+    }
 
     pre_proc(n);
-
-    //TODO: Se a matriz visited estiver totalmente preenchida a 1 na entrar no rec!
+    
+    int aux2 = 0, aux3 = 0;
 
     for (int i = 0; i < n; i++) {
-        // for (int j = 0; j < n; j++) {
-        //     if (visited[i][j] == 0) {
-        //         aux = 1;
-        //         break;
-        //     }
-        // }
         if (lb[i] != 0 || cb[i] != 0 || db[0] != 0 || qb[0] != 0 || qb[1] != 0 || qb[2] != 0 || qb[3] != 0) {
             aux = 1;
         }
@@ -663,18 +693,20 @@ void func(int n) {
             break;
     }
 
-    //TODO: Se o pre_proc retornar impossivel nao entrar no rec 
-    
-
     if (aux == 1)
         rec(n, 0, 0);
-    else
-        saved = qr;
-
+    else {
+        for (int k = 0;  k < n; k++) {
+            for (int l = 0; l < n; l++) {
+                saved[k][l] = qr[k][l];
+            }
+        }
+        countqrs++;
+    }
     
     if (countqrs == 1 || aux == 0) {
         cout << "VALID: 1 QR Code generated!" << endl;
-        printQrCode(saved, n);
+        printQrCode(n);
     } else if (countqrs == 0 ) {
         cout << "DEFECT: No QR Code generated!" << endl;
     } else if (countqrs > 1) {
@@ -689,9 +721,9 @@ int main() {
     
     //clock_t tStart = clock();
 
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    // ios_base::sync_with_stdio(false);
+    // cin.tie(NULL);
+    // cout.tie(NULL);
 
     int num, n, aux;
 
