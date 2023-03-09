@@ -369,42 +369,37 @@ void pre_proc(int n) {
     vector<int> idxLines(n);
     vector<int> idxCols(n);
 
-    //NOTE: FILL LINES AND COLS
-    for (int i = 0; i < n; i++) {
-        if (lb[i] == 0) {
-            idxLines[i] = 1;
-            countLines0++;
-            for (int j = 0; j < n; j++) {
-                visited[i][j] = -1;
+
+    if (db[0] == n) {
+        for (int i = 0; i < n; i++) {
+            if (visited[i][i] == 0) {
+                qr[i][i] = 1;
+                setBlack(n, i, i);
+                visited[i][i] = 1;
             }
         }
-        if (cb[i] == 0) {
-            idxCols[i] = 1;
-            countCols0++;
-            for (int j = 0; j < n; j++) {
-                visited[j][i] = -1;
+    }
+    if (db[0] == 0) {
+        for (int i = 0; i < n; i++) {
+            if (visited[i][i] == 0) {
+                visited[i][i] = -1;
             }
         }
-        if (lb[i] == n - countCols1) {
-            idxLines[i] = 2;
-            countLines1++;
-            for (int j = 0; j < n; j++) {
-                if (visited[i][j] == 0) {
-                    qr[i][j] = 1;
-                    setBlack(n, i, j);
-                    visited[i][j] = 1;
-                }
+    }
+
+    if (db[1] == n) {
+        for (int i = 0; i < n; i++) {
+            if (visited[i][n - 1 - i] == 0) {
+                qr[i][n - 1 - i] = 1;
+                setBlack(n, i, n - 1 - i);
+                visited[i][n - 1 - i] = 1;
             }
         }
-        if (cb[i] == n - countLines1) {
-            idxCols[i] = 2;
-            countCols1++;
-            for (int j = 0; j < n; j++) {
-                if (visited[j][i] == 0) {
-                    qr[j][i] = 1;
-                    setBlack(n, j, i);
-                    visited[j][i] = 1;
-                }
+    }
+    if (db[1] == 0) {
+        for (int i = 0; i < n; i++) {
+            if (visited[i][n - 1 - i] == 0) {
+                visited[i][n - 1 - i] = -1;
             }
         }
     }
@@ -418,7 +413,7 @@ void pre_proc(int n) {
     }
 
     int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
-    
+
     //NOTE: FILL QUANDRANTS
     if (qb[0] == aux1) {
         for (int i = 0; i < tam; i++) {
@@ -497,9 +492,52 @@ void pre_proc(int n) {
         }
     }
 
+    //NOTE: FILL LINES AND COLS
+    for (int i = 0; i < n; i++) {
+        if (lb[i] == 0) {
+            idxLines[i] = 1;
+            countLines0++;
+            for (int j = 0; j < n; j++) {
+                visited[i][j] = -1;
+            }
+        }
+        if (cb[i] == 0) {
+            idxCols[i] = 1;
+            countCols0++;
+            for (int j = 0; j < n; j++) {
+                visited[j][i] = -1;
+            }
+        }
+        if (lb[i] == n - countCols1) {
+            idxLines[i] = 2;
+            countLines1++;
+            for (int j = 0; j < n; j++) {
+                if (visited[i][j] == 0) {
+                    qr[i][j] = 1;
+                    setBlack(n, i, j);
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        if (cb[i] == n - countLines1) {
+            idxCols[i] = 2;
+            countCols1++;
+            for (int j = 0; j < n; j++) {
+                if (visited[j][i] == 0) {
+                    qr[j][i] = 1;
+                    setBlack(n, j, i);
+                    visited[j][i] = 1;
+                }
+            }
+        }
+    }
+
+
+    //FIXME: DIAGONAIS OTIMIZADAS (1 FOR)
 
     
-    //FIXME: DIAGONAIS OTIMIZADAS (1 FOR) 
+
+
     // for (int i = 0; i < n; i++){
     //     if(db[0] == 0){
     //         visited[i][i] = -1;
@@ -676,6 +714,7 @@ void func(int n) {
     memset(visited, 0, sizeof(visited));
     memset(saved, 0, sizeof(saved));
 
+
     if (defect(n)) {
         cout << "DEFECT: No QR Code generated!" << endl;
         return;
@@ -688,6 +727,10 @@ void func(int n) {
     for (int i = 0; i < n; i++) {
         if (lb[i] != 0 || cb[i] != 0 || db[0] != 0 || qb[0] != 0 || qb[1] != 0 || qb[2] != 0 || qb[3] != 0) {
             aux = 1;
+        }
+        if (lb[i] < 0 || cb[i] < 0 || db[0] < 0 || qb[0] < 0 || qb[1] < 0 || qb[2] < 0 || qb[3] < 0) {
+            cout << "DEFECT: No QR Code generated!" << endl;
+            return;
         }
         if (aux == 1)
             break;
