@@ -163,7 +163,13 @@ bool isValid(int dim, int line, int col) {
         if (cb[dim - 1] != 0 || db[0] != 0 || qb[0] != 0 || qb[1] != 0 || qb[2] != 0 || qb[3] != 0 || ct[dim - 1] != 0) {
             return false;
         }
+        // for (int i = 0; i < dim; i++) {
+        //     if (lt[i] != 0 || ct[i] != 0) {
+        //         return false;
+        //     }
+        // }
     }
+
 
     return true;
 }
@@ -320,6 +326,7 @@ bool rec(int dim, int i, int j) {
 
     if (j == dim) {
         saved = qr;
+        //printQrCode(saved, dim);
         countqrs++;
         return true;
     } 
@@ -373,22 +380,26 @@ void pre_proc(int n) {
                 visited[j][i] = -1;
             }
         }
-        if (lb[i] == n) {
+        if (lb[i] == n - countCols1) {
             idxLines[i] = 2;
             countLines1++;
             for (int j = 0; j < n; j++) {
-                qr[i][j] = 1;
-                setBlack(n, i, j);
-                visited[i][j] = 1;
+                if (visited[i][j] == 0) {
+                    qr[i][j] = 1;
+                    setBlack(n, i, j);
+                    visited[i][j] = 1;
+                }
             }
         }
-        if (cb[i] == n) {
+        if (cb[i] == n - countLines1) {
             idxCols[i] = 2;
             countCols1++;
             for (int j = 0; j < n; j++) {
-                qr[j][i] = 1;
-                setBlack(n, i, j);
-                visited[j][i] = 1;
+                if (visited[j][i] == 0) {
+                    qr[j][i] = 1;
+                    setBlack(n, j, i);
+                    visited[j][i] = 1;
+                }
             }
         }
     }
@@ -480,67 +491,69 @@ void pre_proc(int n) {
             }
         }
     }
+
+
     
     //FIXME: DIAGONAIS OTIMIZADAS (1 FOR) 
-    for (int i = 0; i < n; i++){
-        if(db[0] == 0){
-            visited[i][i] = -1;
-            qr[i][i] = 0;
-        }
-        if(db[0] == n){
-            visited[i][i] = 1;
-            qr[i][i] = 1;
-            setBlack(n, i, n-i-1);
-        }
-        if(db[1] == 0){
-            visited[i][n-i-1] = -1;
-            qr[i][n-i-1] = 0;
-        }
-        if(db[1] == n){
-            visited[i][n-i-1] = 1;
-            qr[i][n-i-1] = 1;
-            setBlack(n, i, n-i-1);
-        }
+    // for (int i = 0; i < n; i++){
+    //     if(db[0] == 0){
+    //         visited[i][i] = -1;
+    //         qr[i][i] = 0;
+    //     }
+    //     if(db[0] == n){
+    //         visited[i][i] = 1;
+    //         qr[i][i] = 1;
+    //         setBlack(n, i, n-i-1);
+    //     }
+    //     if(db[1] == 0){
+    //         visited[i][n-i-1] = -1;
+    //         qr[i][n-i-1] = 0;
+    //     }
+    //     if(db[1] == n){
+    //         visited[i][n-i-1] = 1;
+    //         qr[i][n-i-1] = 1;
+    //         setBlack(n, i, n-i-1);
+    //     }
 
-        if(visited[i][i] == 1){
-            countDiagonal1++;
-        }else if(visited[i][i] == -1){
-            countDiagonal0++;
-        }
+    //     if(visited[i][i] == 1){
+    //         countDiagonal1++;
+    //     }else if(visited[i][i] == -1){
+    //         countDiagonal0++;
+    //     }
 
-        if(visited[i][n - i -1] == 1){
-            countDiagonalInv1++;
-        }else if(visited[i][n - i -1] == -1){
-            countDiagonalInv0++;
-        }
+    //     if(visited[i][n - i -1] == 1){
+    //         countDiagonalInv1++;
+    //     }else if(visited[i][n - i -1] == -1){
+    //         countDiagonalInv0++;
+    //     }
 
-        if (n - countDiagonal0 == db[0]) {
-            if (visited[i][i] == 0) {
-                visited[i][i] = -1;
-                qr[i][i] = 0;
+    //     if (n - countDiagonal0 == db[0]) {
+    //         if (visited[i][i] == 0) {
+    //             visited[i][i] = -1;
+    //             qr[i][i] = 0;
                 
-            }
-        }else if(countDiagonal1 == db[0]){
-            if (visited[i][i] == 0) {
-                visited[i][i] = 1;
-                qr[i][i] = 1;
-                setBlack(n, i, i);
-            }
-        }
+    //         }
+    //     }else if(countDiagonal1 == db[0]){
+    //         if (visited[i][i] == 0) {
+    //             visited[i][i] = 1;
+    //             qr[i][i] = 1;
+    //             setBlack(n, i, i);
+    //         }
+    //     }
 
-        if (n - countDiagonalInv0 == db[0]) {
-            if (visited[i][n - i -1] == 0) {
-                visited[i][n -i -1] = 1;
-                qr[i][n - i - 1] = 0;
-            }
-        }else if(countDiagonalInv1 == db[0]){
-            if (visited[i][n - i - 1] == 0) {
-                visited[i][n - i - 1] = -1;
-                qr[i][n-i-1] = 1;
-                setBlack(n, i, n-i-1);
-            }
-        }
-    }
+    //     if (n - countDiagonalInv0 == db[0]) {
+    //         if (visited[i][n - i -1] == 0) {
+    //             visited[i][n -i -1] = 1;
+    //             qr[i][n - i - 1] = 0;
+    //         }
+    //     }else if(countDiagonalInv1 == db[0]){
+    //         if (visited[i][n - i - 1] == 0) {
+    //             visited[i][n - i - 1] = -1;
+    //             qr[i][n-i-1] = 1;
+    //             setBlack(n, i, n-i-1);
+    //         }
+    //     }
+    // }
     
     
     //NOTE:
@@ -582,6 +595,45 @@ void pre_proc(int n) {
 
     }
 
+    // for (int i = 0; i < n; i++) {
+    //     int count = 0;
+    //     for (int j = 0; j < n; j++) {
+    //         if (visited[i][j] == 0) {
+    //             count++;
+    //         }
+    //     }
+    //     if (lt[i] == count / 2) {
+    //         int aux = 0;
+    //         for (int k = 0; k < n; k++) {
+    //             if (aux == 0 && visited[i][k] != 0){
+    //                 if (qr[i][k] == 0) {
+    //                     aux = -1;
+    //                 } else {
+    //                     aux = 1;
+    //                 }
+    //             }
+    //             if (aux == 1) {
+    //                 aux = -1;
+    //                 if (visited[i][k] == 0) {
+    //                     qr[i][k] = 1;
+    //                     visited[i][k] = 1;
+    //                 }
+    //             } else if (aux = -1) {
+    //                 aux = 1;
+    //                 if (visited[i][k] == 0) {
+    //                     visited[i][k] = -1;
+    //                 }
+
+    //             }
+    //         }
+
+    //         if (lt[i] != 0) {
+    //             int x;
+    //         }
+    //     }
+    // }
+
+
     idxLines.clear();
     idxCols.clear();
 }
@@ -598,11 +650,14 @@ void func(int n) {
     //TODO: Se a matriz visited estiver totalmente preenchida a 1 na entrar no rec!
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (visited[i][j] == 0) {
-                aux = 1;
-                break;
-            }
+        // for (int j = 0; j < n; j++) {
+        //     if (visited[i][j] == 0) {
+        //         aux = 1;
+        //         break;
+        //     }
+        // }
+        if (lb[i] != 0 || cb[i] != 0 || db[0] != 0 || qb[0] != 0 || qb[1] != 0 || qb[2] != 0 || qb[3] != 0) {
+            aux = 1;
         }
         if (aux == 1)
             break;
