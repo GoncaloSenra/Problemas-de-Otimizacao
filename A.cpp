@@ -314,6 +314,10 @@ void setWhite(int dim, int line, int col) {
 
 
 bool rec(int dim, int i, int j) {
+
+    // if (qr[0][5] == 1 && qr[0][6] == 1 && qr[0][7] == 0 && qr[0][8] == 1 && !isValid(dim, j, i) && j == 8)
+    //     cout << "";
+
     
     if (i == dim) {
         i = 0;
@@ -331,7 +335,7 @@ bool rec(int dim, int i, int j) {
                 saved[k][l] = qr[k][l];
             }
         }
-        //printQrCode(saved, dim);
+        //printQrCode(dim);
         countqrs++;
         return true;
     } 
@@ -347,7 +351,11 @@ bool rec(int dim, int i, int j) {
         rec(dim, i + 1, j);
     } else {
         //TODO: if lb == 0 passar a linha
-        rec(dim, i + 1, j);
+        if (i == dim && isValid(dim , j, i) && lb[j + 1] == 0 && lt[j + 1] == 0) {
+            rec(dim, dim, j + 1);
+        } else {
+            rec(dim, i + 1, j);
+        }
     }
     
     return true;
@@ -366,20 +374,30 @@ void pre_proc(int n) {
     int countDiagonalInv0 = 0;
 
 
+    int countcols[30];
+    int countlines[30];
+    memset(countcols, 0, sizeof(countcols));
+    memset(countlines, 0, sizeof(countlines));
+
+
+
     vector<int> idxLines(n);
     vector<int> idxCols(n);
 
 
     if (db[0] == n) {
+        countDiagonal1 = 1;
         for (int i = 0; i < n; i++) {
             if (visited[i][i] == 0) {
                 qr[i][i] = 1;
                 setBlack(n, i, i);
                 visited[i][i] = 1;
+                countlines[i]++;
+                countcols[i]++;
             }
         }
-    }
-    if (db[0] == 0) {
+    } else if (db[0] == 0) {
+        countDiagonal1 = 1;
         for (int i = 0; i < n; i++) {
             if (visited[i][i] == 0) {
                 visited[i][i] = -1;
@@ -387,16 +405,19 @@ void pre_proc(int n) {
         }
     }
 
-    if (db[1] == n) {
+    if (db[1] == n - countDiagonal1) {
+        countDiagonalInv1 = 1;
         for (int i = 0; i < n; i++) {
             if (visited[i][n - 1 - i] == 0) {
                 qr[i][n - 1 - i] = 1;
                 setBlack(n, i, n - 1 - i);
                 visited[i][n - 1 - i] = 1;
+                countlines[i]++;
+                countcols[n - 1 - i]++;
             }
         }
-    }
-    if (db[1] == 0) {
+    } else if (db[1] == 0) {
+        countDiagonalInv1 = 1;
         for (int i = 0; i < n; i++) {
             if (visited[i][n - 1 - i] == 0) {
                 visited[i][n - 1 - i] = -1;
@@ -415,85 +436,87 @@ void pre_proc(int n) {
     int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
 
     //NOTE: FILL QUANDRANTS
-    if (qb[0] == aux1) {
-        for (int i = 0; i < tam; i++) {
-            for (int j = tam ; j < n; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = 1;
-                    qr[i][j] = 1;
-                    setBlack(n, i, j);
-                }
-            }
-        }
-    } else if (qb[0] == 0) {
-        for (int i = 0; i < tam; i++) {
-            for (int j = tam ; j < n; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = -1;
-                }
-            }
-        }
-    }
-    if (qb[1] == aux2) {
-        for (int i = 0; i < tam; i++) {
-            for (int j = 0 ; j < tam; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = 1;
-                    qr[i][j] = 1;
-                    setBlack(n, i, j);
-                }
-            }
-        }
-    } else if (qb[1] == 0) {
-        for (int i = 0; i < tam; i++) {
-            for (int j = 0 ; j < tam; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = -1;
-                }
-            }
-        }
-    }
-    if (qb[2] == aux3) {
-        for (int i = tam; i < n; i++) {
-            for (int j = 0 ; j < tam; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = 1;
-                    qr[i][j] = 1;
-                    setBlack(n, i, j);
-                }
-            }
-        }
-    } else if (qb[2] == 0) {
-        for (int i = tam; i < n; i++) {
-            for (int j = 0 ; j < tam; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = -1;
-                }
-            }
-        }
-    }
-    if (qb[3] == aux4) {
-        for (int i = tam; i < n; i++) {
-            for (int j = tam ; j < n; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = 1;
-                    qr[i][j] = 1;
-                    setBlack(n, i, j);
-                }
-            }
-        }
-    } else if (qb[3] == 0) {
-        for (int i = tam; i < n; i++) {
-            for (int j = tam ; j < n; j++) {
-                if (visited[i][j] == 0) {
-                    visited[i][j] = -1;
-                }
-            }
-        }
-    }
+    // if (qb[0] == aux1) {
+    //     for (int i = 0; i < tam; i++) {
+    //         for (int j = tam ; j < n; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = 1;
+    //                 qr[i][j] = 1;
+    //                 setBlack(n, i, j);
+    //             }
+    //         }
+    //     }
+    // } else if (qb[0] == 0) {
+    //     for (int i = 0; i < tam; i++) {
+    //         for (int j = tam ; j < n; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = -1;
+    //             }
+    //         }
+    //     }
+    // }
+    // if (qb[1] == aux2) {
+    //     for (int i = 0; i < tam; i++) {
+    //         for (int j = 0 ; j < tam; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = 1;
+    //                 qr[i][j] = 1;
+    //                 setBlack(n, i, j);
+    //             }
+    //         }
+    //     }
+    // } else if (qb[1] == 0) {
+    //     for (int i = 0; i < tam; i++) {
+    //         for (int j = 0 ; j < tam; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = -1;
+    //             }
+    //         }
+    //     }
+    // }
+    // if (qb[2] == aux3) {
+    //     for (int i = tam; i < n; i++) {
+    //         for (int j = 0 ; j < tam; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = 1;
+    //                 qr[i][j] = 1;
+    //                 setBlack(n, i, j);
+    //             }
+    //         }
+    //     }
+    // } else if (qb[2] == 0) {
+    //     for (int i = tam; i < n; i++) {
+    //         for (int j = 0 ; j < tam; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = -1;
+    //             }
+    //         }
+    //     }
+    // }
+    // if (qb[3] == aux4) {
+    //     for (int i = tam; i < n; i++) {
+    //         for (int j = tam ; j < n; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = 1;
+    //                 qr[i][j] = 1;
+    //                 setBlack(n, i, j);
+    //             }
+    //         }
+    //     }
+    // } else if (qb[3] == 0) {
+    //     for (int i = tam; i < n; i++) {
+    //         for (int j = tam ; j < n; j++) {
+    //             if (visited[i][j] == 0) {
+    //                 visited[i][j] = -1;
+    //             }
+    //         }
+    //     }
+    // }
 
     //NOTE: FILL LINES AND COLS
+    
     for (int i = 0; i < n; i++) {
+        // int temp = 0;
         if (lb[i] == 0) {
             idxLines[i] = 1;
             countLines0++;
@@ -508,18 +531,21 @@ void pre_proc(int n) {
                 visited[j][i] = -1;
             }
         }
-        if (lb[i] == n - countCols1) {
+        if (lb[i] == n - countlines[i]) {
             idxLines[i] = 2;
+            // if (countDiagonal1 == 1 || countDiagonalInv1 == 1)
+            //     temp = 1;
             countLines1++;
             for (int j = 0; j < n; j++) {
                 if (visited[i][j] == 0) {
                     qr[i][j] = 1;
                     setBlack(n, i, j);
                     visited[i][j] = 1;
+                    countcols[j]++;
                 }
             }
         }
-        if (cb[i] == n - countLines1) {
+        if (cb[i] == n - countcols[i]) {
             idxCols[i] = 2;
             countCols1++;
             for (int j = 0; j < n; j++) {
@@ -527,6 +553,7 @@ void pre_proc(int n) {
                     qr[j][i] = 1;
                     setBlack(n, j, i);
                     visited[j][i] = 1;
+                    countlines[j]++;
                 }
             }
         }
@@ -714,13 +741,15 @@ void func(int n) {
     memset(visited, 0, sizeof(visited));
     memset(saved, 0, sizeof(saved));
 
-
+    //clock_t tStart = clock();
     if (defect(n)) {
         cout << "DEFECT: No QR Code generated!" << endl;
         return;
     }
 
     pre_proc(n);
+
+    
     
     int aux2 = 0, aux3 = 0;
 
@@ -735,6 +764,10 @@ void func(int n) {
         if (aux == 1)
             break;
     }
+
+    //printf("Time PRE_PROC: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
+    //clock_t tStart2 = clock();
 
     if (aux == 1)
         rec(n, 0, 0);
@@ -755,6 +788,8 @@ void func(int n) {
     } else if (countqrs > 1) {
         cout << "INVALID: " << countqrs << " QR Codes generated!" << endl;
     }
+
+    //printf("Time taken: %.10fs\n", (double)(clock() - tStart2)/CLOCKS_PER_SEC);
 
 }
 
