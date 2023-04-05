@@ -6,47 +6,9 @@
 
 using namespace std;
 
-/*
-5
-2
-0 1
-0 1  
-0 1 
-0 1 
-0 1 0 1 
-2 0
-2
-2 2
-2 2  
-0 0 
-0 0 
-0 1 0 1 
-2 0
-2
-2 0
-1 1  
-0 0 
-1 1 
-0 1 0 1 
-2 0
-2
-1 1
-1 1  
-1 1 
-1 1 
-0 1 0 1 
-2 0
-2
-0 0
-0 0  
-0 0 
-0 0 
-0 1 0 1 
-2 0
-
-*/
-
 vector<vector<int>> test;
+
+vector<int> lb, cb, lt, ct, qb, db;
 
 int countqrs = 0;
 
@@ -354,6 +316,7 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
             i = 0;
             j++;
             rec(qr, visited, dim, i, j, lb, cb, lt, ct, qb, db);
+            return false;
         }else if (k == dim - 1 && j == dim - 1 && isValid(1, qr, dim, j, k + 1, lb, cb, lt, ct, qb, db) && test != qr) {
             test = qr;
             countqrs++;
@@ -397,12 +360,12 @@ int main() {
     cout.tie(NULL);
 
     int num, n, aux;
-    vector<int> lb, cb, lt, ct, qb, db;
 
     cin >> num;
 
     for (int i = 0; i < num; i++) {
         cin >> n;
+        test = vector<vector<int>>(vector<int>(n, 0));
         for (int j = 0; j < n; j++){
             cin >> aux;
             lb.push_back(aux);

@@ -276,11 +276,8 @@ bool rec(vector<vector<int>> qr, vector<vector<int>> visited, int dim, int i, in
         rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
         qr[j][i] = 0;
         visited[j][i] = 0;
-        if (!isValid(qr, dim, j, i, lb, cb, lt, ct, qb, db)){
-            return false;
-        } else {
-            rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
-        }
+        rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
+
     } else {
         rec(qr, visited, dim, i + 1, j, lb, cb, lt, ct, qb, db);
     }
@@ -347,7 +344,7 @@ void pre_proc(vector<vector<int>> *qr, vector<vector<int>> *visited, int n, vect
 
     int aux1 = tam * tam2 , aux2 = tam * tam, aux3 = tam * tam2, aux4 = tam2 * tam2;
     
-    //TODO: FILL QUANDRANTS
+    //NOTE: FILL QUANDRANTS
     if (qb[0] == aux1) {
         for (int i = 0; i < tam; i++) {
             for (int j = tam ; j < n; j++) {
@@ -594,7 +591,7 @@ void func(int n, vector<int> lb, vector<int> cb, vector<int> lt, vector<int> ct,
 
 int main() {
     
-    clock_t tStart = clock();
+    //clock_t tStart = clock();
 
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -641,7 +638,7 @@ int main() {
         db.clear();
     }
 
-    printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    //printf("Time taken: %.10fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     return 0;
 }
