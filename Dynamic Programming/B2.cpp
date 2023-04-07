@@ -22,61 +22,97 @@ void task12(int n, int d, int r, int k, bool task2)
         int j = 0;
         while (j < d)
         {
-            //cout <<  j << ": " << endl;
-            int auxToBuy = bought - (shares[i][j] * k);
+            // cout <<  j << ": " << endl;
+            long long int auxToBuy = bought - (shares[i][j] * k);
             if (auxToBuy >= toSell)
             {
                 toSell = auxToBuy;
                 if (task2)
                 {
-                    if (j != d-1){
-                        if (j > 0 && tradingScheme[j-1] == k){
-                        tradingScheme[j-1] = 0;
-                        tradingScheme[j] = k;
-                    } else {
-                        tradingScheme[j] = k;
-                    }
+                    if (j != d - 1)
+                    {
+                        if (j > 0 && tradingScheme[j - 1] == k)
+                        {
+                            tradingScheme[j - 1] = 0;
+                            tradingScheme[j] = k;
+                        }
+                        else
+                        {
+                            tradingScheme[j] = k;
+                        }
                     }
                 }
-                //cout << "Bought | ";
-            } else {
-                //cout << "Not Bought | ";
+                // cout << "Bought | ";
+            }
+            else
+            {
+                // cout << "Not Bought | ";
             }
 
-            int auxToSell = toSell + (shares[i][j] * k) - (r * k);
+            long long int auxToSell = toSell + (shares[i][j] * k) - (r * k);
             if (auxToSell >= bought)
             {
                 bought = auxToSell;
                 if (task2)
-                {   
-                    if (j > 0 && tradingScheme[j-1] == -k){
-                        tradingScheme[j-1] = 0;
+                {
+
+                    if (j > 0 && tradingScheme[j - 1] == -k)
+                    {
+                        tradingScheme[j - 1] = 0;
                         tradingScheme[j] = -k;
-                    } else {
+                    }
+                    else
+                    {
                         tradingScheme[j] = -k;
                     }
                 }
-                //cout << "Sold\n";
-            } else {
-                //cout << "Not Sold\n";
+                // cout << "Sold\n";
+            }
+            else
+            {
+                // cout << "Not Sold\n";
             }
 
-            //cout << "BOUGHT: " << bought << "\tTOSELL: " << toSell << endl;
+            // cout << "BOUGHT: " << bought << "\tTOSELL: " << toSell << endl;
             j++;
         }
         cout << bought << endl;
         if (task2)
         {
-            for (int l = 0; l < d; l++)
-            {
-                cout << tradingScheme[l] << " ";
+            int idx = 0;
+            int state = 0;
+            for (int m = 0; m < d; m++) {
+                if (tradingScheme[m] == -k) {
+                    state = -k;
+                    idx = m;
+                } else if (tradingScheme[m] == k) {
+                    state = k;
+                    idx = m;
+                }
             }
+            if (state == k) {
+                tradingScheme[idx] = 0;
+            }
+
+            if (bought == 0)
+            {
+                for (int l = 0; l < d; l++)
+                {
+                    cout << "0 ";
+                }
+            }
+            else
+            {
+                for (int l = 0; l < d; l++)
+                {
+                    cout << tradingScheme[l] << " ";
+                }
+            }
+
             cout << endl;
         }
     }
 }
-
-
 
 int main()
 {
