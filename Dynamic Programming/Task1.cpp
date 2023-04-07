@@ -11,51 +11,30 @@ using namespace std;
 
 vector<vector<int>> shares;
 
-void task12(int n, int d, int r, int k, bool task2)
+void task1(int n, int d, int r, int k)
 {
     for (int i = 0; i < n; i++)
     {
         long long int toSell = -shares[i][0] * k;
         long long int bought = 0;
-        vector<int> tradingScheme = vector<int>(d, 0);
 
         int j = 0;
         while (j < d)
         {
             //cout <<  j << ": " << endl;
-            int auxToBuy = bought - (shares[i][j] * k);
+            long long int auxToBuy = bought - (shares[i][j] * k);
             if (auxToBuy >= toSell)
             {
                 toSell = auxToBuy;
-                if (task2)
-                {
-                    if (j != d-1){
-                        if (j > 0 && tradingScheme[j-1] == k){
-                        tradingScheme[j-1] = 0;
-                        tradingScheme[j] = k;
-                    } else {
-                        tradingScheme[j] = k;
-                    }
-                    }
-                }
                 //cout << "Bought | ";
             } else {
                 //cout << "Not Bought | ";
             }
 
-            int auxToSell = toSell + (shares[i][j] * k) - (r * k);
+            long long int auxToSell = toSell + (shares[i][j] * k) - (r * k);
             if (auxToSell >= bought)
             {
                 bought = auxToSell;
-                if (task2)
-                {   
-                    if (j > 0 && tradingScheme[j-1] == -k){
-                        tradingScheme[j-1] = 0;
-                        tradingScheme[j] = -k;
-                    } else {
-                        tradingScheme[j] = -k;
-                    }
-                }
                 //cout << "Sold\n";
             } else {
                 //cout << "Not Sold\n";
@@ -65,14 +44,6 @@ void task12(int n, int d, int r, int k, bool task2)
             j++;
         }
         cout << bought << endl;
-        if (task2)
-        {
-            for (int l = 0; l < d; l++)
-            {
-                cout << tradingScheme[l] << " ";
-            }
-            cout << endl;
-        }
     }
 }
 
@@ -99,16 +70,9 @@ int main()
 
     if (task == 1)
     {
-        task12(n, d, r, k, false);
+        task1(n, d, r, k);
     }
-    else if (task == 2)
-    {
-        task12(n, d, r, k, true);
-    }
-    else if (task == 3)
-    {
-        cout << "3" << endl;
-    }
+    
 
     return 0;
 }

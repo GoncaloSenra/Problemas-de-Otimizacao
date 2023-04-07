@@ -100,6 +100,73 @@ void task22(int n, int d, int r, int k)
 }
 
 
+void task22(int n, int d, int r, int k)
+{
+    for (int j = 0; j < n; j++)
+    {
+        int aheadNotBuy, aheadBuy, curBuy, curNotBuy;
+        aheadBuy = aheadNotBuy = 0;
+
+        vector<int> dp = vector<int>(d, 0);
+
+        for (int i = d - 1; i >= 0; i--)
+        {
+            cout << i << ":\n";
+            curNotBuy = max(shares[j][i] * k + aheadBuy, aheadNotBuy);
+            if (shares[j][i] * k + aheadBuy > aheadNotBuy) {
+                cout<<"Sold |";
+                if(i == d - 1){
+                    dp[i] = -k;
+                } else if (i == 0) {
+                    dp[i] == 0; 
+                } else {
+                    if (dp[i+1] == -k) {
+                        dp[i+1] = 0;
+                        dp[i] = -k;
+                    } else {
+                        dp[i] = -k;
+                    }
+                }
+            }else {
+                cout<<"Not Sold |";
+
+            }
+            //cout << "1> " << shares[j][i] * k + aheadBuy << "\t: " << aheadNotBuy << endl;
+
+            curBuy = max(-(shares[j][i] * k) - (r * k) + aheadNotBuy, aheadBuy);
+            if (-(shares[j][i] * k) - (r * k) + aheadNotBuy > aheadBuy) {
+                cout<<" Bought\n";
+                if(i == d - 1){
+                    dp[i] = k;
+                } else {
+                    if (dp[i+1] == k) {
+                        dp[i+1] = 0;
+                        dp[i] = k;
+                    } else {
+                        dp[i] = k;
+                    }
+                }
+            } else {
+                cout<<" Not Bought\n";
+
+            }
+            //cout << "2> " << -(shares[j][i] * k) - (r * k) + aheadNotBuy << "\t: " << aheadBuy << endl;
+
+            aheadBuy = curBuy;
+            aheadNotBuy = curNotBuy;
+
+        }
+
+        cout << aheadBuy << endl;
+        for (int l = 0; l < d; l++)
+        {
+            cout << dp[l] << " ";
+        }
+        cout << endl;
+        cout << "------------------" << endl;
+    }
+}
+
 int getAns(int n, int ind, int buy, int cap, vector<vector<vector<int>>>& dp, int k, int r){
 
     if(ind==n || cap==0) return 0; //base case
