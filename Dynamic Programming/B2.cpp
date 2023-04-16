@@ -20,6 +20,9 @@ void task12(int n, int d, int r, int k, bool task2)
         vector<int> tradingScheme = vector<int>(d, 0);
 
         int j = 0;
+        int idxLastBuy = 0;
+        int idxLastSell = 0;
+
         while (j < d)
         {
             // cout <<  j << ": " << endl;
@@ -31,15 +34,16 @@ void task12(int n, int d, int r, int k, bool task2)
                 {
                     if (j != d - 1)
                     {
-                        if (j > 0 && tradingScheme[j - 1] == k)
+                        if (j > 0 && idxLastBuy >= idxLastSell)
                         {
-                            tradingScheme[j - 1] = 0;
+                            tradingScheme[idxLastBuy] = 0;
                             tradingScheme[j] = k;
                         }
                         else
                         {
                             tradingScheme[j] = k;
                         }
+                        idxLastBuy = j;
                     }
                 }
                 // cout << "Bought | ";
@@ -56,15 +60,16 @@ void task12(int n, int d, int r, int k, bool task2)
                 if (task2)
                 {
 
-                    if (j > 0 && tradingScheme[j - 1] == -k)
+                    if (j > 0 && idxLastSell > idxLastBuy)
                     {
-                        tradingScheme[j - 1] = 0;
+                        tradingScheme[idxLastSell] = 0;
                         tradingScheme[j] = -k;
                     }
                     else
                     {
                         tradingScheme[j] = -k;
                     }
+                    idxLastSell = j;
                 }
                 // cout << "Sold\n";
             }
@@ -94,20 +99,12 @@ void task12(int n, int d, int r, int k, bool task2)
                 tradingScheme[idx] = 0;
             }
 
-            if (bought == 0)
+        
+            for (int l = 0; l < d; l++)
             {
-                for (int l = 0; l < d; l++)
-                {
-                    cout << "0 ";
-                }
+                cout << tradingScheme[l] << " ";
             }
-            else
-            {
-                for (int l = 0; l < d; l++)
-                {
-                    cout << tradingScheme[l] << " ";
-                }
-            }
+            
 
             cout << endl;
         }

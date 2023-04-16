@@ -188,9 +188,6 @@ int getAns(int n, int ind, int buy, int cap, vector<vector<vector<int>>>& dp, in
 }
 
 
-    
-
-
 int main()
 {
     int task;
