@@ -6,84 +6,126 @@
 
 #include <iostream>
 #include <vector>
+#include <stack>
 #include <algorithm>
 #include <sstream>
 
 using namespace std;
 
-int n, m, o;
+int n;
+int t;
 vector<vector<int>> edges;
+stack<int> pilha;
 vector<int> low;
 vector<int> dfs;
-vector<int> parent;
-int t;
-int points;
+vector<int> in;
+vector<vector<int>> scc;
 
-void AP(int v)
+void Tarzan(int v)
 {
-
     low[v] = dfs[v] = t;
     t++;
-
-    for (v = 1; v < n + 1; v++)
+    pilha.push(v);
+    in[v] = 1;
+    for (int w = 1; w <= n; w++)
     {
-        for (int w = 1; w < n + 1; w++)
+        if (edges[v][w] > 0)
         {
-            if (edges[v][w] == 1)
+            if (dfs[w] == 0)
             {
-                if (dfs[w] == 0)
-                {
-                    parent[w] = v;
-                    AP(w);
-                    low[v] = min(low[v], low[w]);
-                    if (dfs[v] == 1 && dfs[w] != 2)
-                    {
-                        points++;
-                    }
-                    if (dfs[v] != 1 && low[w] >= dfs[v])
-                    {
-                        points++;
-                    }
-                }
-                else if (parent[v] != w)
-                {
-                    low[v] = min(low[v], dfs[w]);
-                }
+                Tarzan(w);
+                low[v] = min(low[v], low[w]);
+            }
+            else if (in[w] == 1)
+            {
+                low[v] = min(low[v], dfs[w]);
             }
         }
+    }
+    if (low[v] == dfs[v])
+    {
+        vector<int> c;
+        int w;
+        do
+        {
+            w = pilha.top();
+            pilha.pop();
+            in[w] = 0;
+            c.push_back(w);
+        } while (w != v);
+        scc.push_back(c);
     }
 }
 
 int main()
 {
-
-    char c;
-    string line;
-    while (getline(cin, line))
+    int id, m, b;
+    t = 1;
+    while (cin >> n)
     {
-        t = 0;
-        points = 0;
-        istringstream iss(line);
-        iss >> n;
-        if (n == 0)
-            continue;
         edges = vector<vector<int>>(n + 1, vector<int>(n + 1, 0));
         dfs = vector<int>(n + 1, 0);
         low = vector<int>(n + 1, 0);
-        parent = vector<int>(n + 1, 0);
-        while (getline(cin, line))
+        in = vector<int>(n + 1, 0);
+
+        for (int i = 0; i < n; i++)
         {
-            istringstream iss2(line);
-            iss2 >> m;
-            if (m == 0)
-                break;
-            while (iss2 >> o)
+            cin >> id;
+
+            while (1)
             {
-                edges[m][o] = 1;
-                edges[o][m] = 1;
+                cin >> m;
+                if (m == 0)
+                    break;
+
+                cin >> b;
+
+                edges[id][b] = m;
             }
         }
-        cout << points << endl;
+
+        for (int j = 1; j < n + 1; j++)
+        {
+            int l = 0;
+            for (int k = 1; k < n + 1; k++)
+            {
+                if (edges[k][j] > 0)
+                {
+                    l = 1;
+                }
+            }
+            if (l == 0)
+            {
+                Tarzan(j);
+            }
+        }
+
+        if (scc.size() == n)
+        {
+            cout << "No cluster" << endl;
+        }
+        else
+        {
+            int total = 0;
+            for (int l = 0; l < scc[0].size(); l++)
+            {
+                int debt = 0;
+                for (int x = 1; x < n+1; x++)
+                {
+                    debt -= edges[scc[0][l]][x];
+                }
+
+                for (int x = 1; x < n+1; x++)
+                {
+                    debt += edges[x][scc[0][l]];
+                }
+                total += debt;
+            }
+            cout << total << endl;
+        }
+
+        pilha = stack<int>();
+        scc = vector<vector<int>>();
     }
 
     return 0;
