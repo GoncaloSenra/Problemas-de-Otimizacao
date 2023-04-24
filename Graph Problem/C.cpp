@@ -84,7 +84,7 @@ int main()
             }
         }
 
-        for (int j = 1; j < n + 1; j++)
+        /*for (int j = 1; j < n + 1; j++)
         {
             int l = 0;
             for (int k = 1; k < n + 1; k++)
@@ -98,6 +98,12 @@ int main()
             {
                 Tarzan(j);
             }
+        }*/
+
+        for (int j = 1; j < n + 1; j++) {
+            if (dfs[j] == 0) {
+                Tarzan(j);
+            }
         }
 
         if (scc.size() == n)
@@ -107,19 +113,19 @@ int main()
         else
         {
             int total = 0;
-            for (int l = 0; l < scc[0].size(); l++)
-            {
-                int debt = 0;
-                for (int x = 1; x < n+1; x++)
-                {
-                    debt -= edges[scc[0][l]][x];
+            for (int z = 0; z < scc.size() ;z++) {
+                if (scc[z].size() > 1) {
+                    for (int l = 0; l < scc[z].size(); l++)
+                    {
+                        int debt = 0;
+                        for (int x = 1; x < n+1; x++)
+                        {
+                            debt -= edges[scc[z][l]][x];
+                            debt += edges[x][scc[z][l]];
+                        }
+                        total += debt;
+                    }
                 }
-
-                for (int x = 1; x < n+1; x++)
-                {
-                    debt += edges[x][scc[0][l]];
-                }
-                total += debt;
             }
             cout << total << endl;
         }
