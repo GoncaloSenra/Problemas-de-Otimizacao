@@ -21,7 +21,7 @@ vector<int> dfs;
 vector<int> in;
 vector<vector<int>> scc;
 
-void Tarzan(int v)
+void Tarjan(int v)
 {
     low[v] = dfs[v] = t;
     t++;
@@ -33,7 +33,7 @@ void Tarzan(int v)
         {
             if (dfs[w] == 0)
             {
-                Tarzan(w);
+                Tarjan(w);
                 low[v] = min(low[v], low[w]);
             }
             else if (in[w] == 1)
@@ -96,13 +96,13 @@ int main()
             }
             if (l == 0)
             {
-                Tarzan(j);
+                Tarjan(j);
             }
         }*/
 
         for (int j = 1; j < n + 1; j++) {
             if (dfs[j] == 0) {
-                Tarzan(j);
+                Tarjan(j);
             }
         }
 
@@ -112,8 +112,10 @@ int main()
         }
         else
         {
+            int best = -999999999;
             int total = 0;
             for (int z = 0; z < scc.size() ;z++) {
+                total = 0;
                 if (scc[z].size() > 1) {
                     for (int l = 0; l < scc[z].size(); l++)
                     {
@@ -125,9 +127,12 @@ int main()
                         }
                         total += debt;
                     }
+                    if (best < total) {
+                        best = total;
+                    }
                 }
             }
-            cout << total << endl;
+            cout << best << endl;
         }
 
         pilha = stack<int>();
